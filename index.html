@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>📦 Gestor de Vida Útil</title>
+  <!-- Librerías externas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --color-fondo: #fafbfd;
+      --color-card: white;
+      --color-primary: #4CAF50;
+      --color-secondary: #607d8b;
+      --color-texto: #333;
+      --color-texto-secundario: #666;
+      --borde-radius: 8px;
+      --sombra: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--color-fondo);
+      color: var(--color-texto);
+      line-height: 1.5;
+      font-size: 15px;
+      padding-bottom: 20px;
+    }
+    .navbar {
+      background: white;
+      padding: 8px 4px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px;
+    }
+    .navbar button {
+      background: var(--color-secondary);
+      color: white;
+      border: none;
+      padding: 10px 8px;
+      margin: 0;
+      border-radius: var(--borde-radius);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      min-width: 70px;
+      flex: 1;
+      max-width: 120px;
+    }
+    .navbar button:hover { opacity: 0.9; }
+    .navbar button.active {
+      background: var(--color-primary);
+      box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+    }
+    .container {
+      max-width: 100%;
+      margin: 12px auto;
+      padding: 16px;
+      background: var(--color-card);
+      border-radius: var(--borde-radius);
+      box-shadow: var(--sombra);
+      display: none;
+    }
+    .active-view { display: block !important; }
+    h2 {
+      margin-bottom: 14px;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    select, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+    button {
+      padding: 10px 16px;
+      margin-top: 12px;
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      min-height: 44px;
+    }
+    button:hover { background: #45a049; }
+    button.secondary { background: #9e9e9e; }
+    button.danger { background: #f44336; }
+    button.impulsar { background: #ff9800; }
+    button.export { background: #2196F3; }
+    .tabla-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top: 12px;
+      border-radius: var(--borde-radius);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      min-width: 600px;
+    }
+    th, td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background-color: #f8faf8;
+      font-weight: 600;
+      color: var(--color-secondary);
+      font-size: 12px;
+      position: sticky;
+      top: 0;
+    }
+    .acciones button {
+      padding: 8px;
+      margin: 0 3px;
+      font-size: 18px;
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 50%;
+    }
+    .form-section, .config-section {
+      background: #fbfdfb;
+      padding: 14px;
+      border-radius: var(--borde-radius);
+      margin-bottom: 18px;
+      border: 1px solid #eef5ee;
+    }
+    .filtro-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .filtro-container select, .filtro-container button {
+      margin-top: 0;
+      padding: 8px;
+      font-size: 14px;
+      min-height: 42px;
+    }
+    .mensaje-vacio {
+      text-align: center;
+      color: var(--color-texto-secundario);
+      padding: 24px;
+      font-style: italic;
+      font-size: 15px;
+    }
+    .calendario {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 16px;
+    }
+    .cal-dia {
+      min-height: 70px;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      background: #ffffff;
+      position: relative;
+    }
+    .cal-dia-header {
+      text-align: center;
+      font-weight: 700;
+      padding: 8px;
+      font-size: 12px;
+      color: #555;
+    }
+    .cal-dia-hoy {
+      box-shadow: 0 0 0 2px #4CAF50;
+      font-weight: bold;
+    }
+    .cal-evento {
+      display: block;
+      background: rgba(76, 175, 80, 0.12);
+      color: #2e7d32;
+      padding: 2px 4px;
+      margin-top: 4px;
+      border-radius: 3px;
+      font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    @media (max-width: 768px) {
+      .ocultar-movil {
+        display: none;
+      }
+      h2 { font-size: 1.4rem; }
+      .navbar button { padding: 10px 4px; font-size: 12px; }
+      .cal-dia, .cal-dia-header { font-size: 10px; min-height: 60px; padding: 6px; }
+    }
+  </style>
+</head>
+<body>
+<div class="navbar">
+  <button onclick="cambiarVista('calendario')" id="btnCalendario">📅 Calendario</button>
+  <button onclick="cambiarVista('inventario')" id="btnInventario">📦 Inventario</button>
+  <button onclick="cambiarVista('impulsados')" id="btnImpulsados">🎯 Por Impulsar</button>
+  <button onclick="cambiarVista('configuraciones')" id="btnConfig">⚙️ Configuraciones</button>
+</div>
+<!-- === INVENTARIO === -->
+<div id="vistaInventario" class="container">
+  <h2 id="tituloForm">Registrar Insumo</h2>
+  <div class="form-section" id="formSection">
+    <form id="formulario">
+      <input type="hidden" id="registroId" />
+      <label for="categoria">Categoría</label>
+      <select id="categoria" required>
+        <option value="">-- Seleccionar --</option>
+        <option value="CÁRNICOS EN TROZOS Y RODAJAS">Cárnicos</option>
+        <option value="QUESOS">Quesos</option>
+        <option value="FRUTAS Y VEGETALES">Frutas y Vegetales</option>
+        <option value="SALSAS">Salsas</option>
+        <option value="OTROS INSUMOS">Otros Insumos</option>
+        <option value="PREPS">Preparaciones (PREPS)</option>
+        <option value="OTRO">Otro (escribir)</option>
+      </select>
+      <label for="insumoSelect">Insumo</label>
+      <select id="insumoSelect" style="display:none;"></select>
+      <input type="text" id="insumoInput" placeholder="Nombre del insumo" style="display:none;" />
+      <label for="etapa">Etapa</label>
+      <select id="etapa" required>
+        <option value="">-- Seleccionar --</option>
+        <option value="RECIBIDO">Recibido</option>
+        <option value="PREPARADO">Preparado</option>
+        <option value="LINEA">En Línea</option>
+      </select>
+      <label for="almacenamiento">Almacenamiento</label>
+      <select id="almacenamiento"></select>
+      <label for="fechaIngreso">F. Ingreso</label>
+      <input type="date" id="fechaIngreso" required />
+      <label for="fechaVencimientoManual">F. Venc. Manual (si aplica)</label>
+      <input type="date" id="fechaVencimientoManual" />
+      <label for="cantidad">Cant.</label>
+      <input type="number" id="cantidad" min="0.1" step="0.1" required />
+      <label for="unidad">U/M</label>
+      <select id="unidad" required></select>
+      <button type="button" onclick="guardarRegistro()">Guardar</button>
+      <button type="button" onclick="limpiarFormularioCompleto()">Limpiar</button>
+      <button type="button" onclick="cancelarEdicion()" id="btnCancelar" class="secondary" style="display:none;">Cancelar</button>
+    </form>
+  </div>
+  <div class="form-section">
+    <div class="filtro-container">
+      <select id="filtroDias" style="flex:1;">
+        <option value="">Todos los días</option>
+        <option value="1">≤ 1 día</option>
+        <option value="2">≤ 2 días</option>
+        <option value="3">≤ 3 días</option>
+        <option value="7">≤ 7 días</option>
+      </select>
+      <button onclick="ordenarInventario('asc')" title="Más próximos">🔼</button>
+      <button onclick="ordenarInventario('desc')" title="Más lejanos">🔽</button>
+      <button onclick="aplicarFiltros()">Filtrar</button>
+      <button onclick="limpiarFiltros()" class="secondary">Limpiar</button>
+    </div>
+  </div>
+  <div style="margin: 15px 0; display:flex; gap:10px; flex-wrap:wrap;">
+    <button onclick="exportarPDF('inventario')" class="export">📄 PDF</button>
+    <button onclick="exportarExcel('inventario')" class="export">xlsx</button>
+  </div>
+  <div class="tabla-wrapper">
+    <table id="tablaInventario">
+      <thead>
+        <tr>
+          <th>Insumo</th>
+          <th class="ocultar-movil">Etapa</th>
+          <th class="ocultar-movil">F. Ingreso</th>
+          <th>F. Venc.</th>
+          <th>Cant.</th>
+          <th>U/M</th>
+          <th class="ocultar-movil">Almac.</th>
+          <th>Días Rest.</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpoTabla"></tbody>
+    </table>
+  </div>
+</div>
+<!-- === POR IMPULSAR === -->
+<div id="vistaImpulsados" class="container">
+  <h2>🎯 Por Impulsar</h2>
+  <div class="form-section" style="padding:10px;">
+    <div class="filtro-container">
+      <button onclick="ordenarImpulsados('asc')" title="Más próximos">🔼</button>
+      <button onclick="ordenarImpulsados('desc')" title="Más lejanos">🔽</button>
+    </div>
+  </div>
+  <div style="margin: 15px 0; display:flex; gap:10px; flex-wrap:wrap;">
+    <button onclick="exportarPDF('impulsados')" class="export">📄 PDF</button>
+    <button onclick="exportarExcel('impulsados')" class="export">xlsx</button>
+  </div>
+  <div class="tabla-wrapper">
+    <table id="tablaImpulsados">
+      <thead>
+        <tr>
+          <th>Insumo</th>
+          <th>F. Venc.</th>
+          <th>Cant.</th>
+          <th>U/M</th>
+          <th class="ocultar-movil">Almac.</th>
+          <th>Días Rest.</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpoTablaImpulsados"></tbody>
+    </table>
+  </div>
+  <div id="mensajeVacioImpulsados" class="mensaje-vacio" style="display:none;">
+    No hay insumos marcados para impulsar.
+  </div>
+</div>
+<!-- === CALENDARIO === -->
+<div id="vistaCalendario" class="container">
+  <h2>📅 Calendario de Vencimientos</h2>
+  <div style="margin-bottom: 12px;">
+    <button onclick="cambiarMes(-1)" class="secondary">❮</button>
+    <span id="tituloMes" style="margin: 0 10px; font-weight: 600;"></span>
+    <button onclick="cambiarMes(1)" class="secondary">❯</button>
+  </div>
+  <div class="calendario" id="calendarioGrid"></div>
+</div>
+<!-- === CONFIGURACIONES === -->
+<div id="vistaConfiguraciones" class="container">
+  <h2>⚙️ Configuraciones</h2>
+  <div style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap;">
+    <button onclick="exportarRespaldo()" class="export">💾 Exportar Respaldo (.json)</button>
+    <button onclick="document.getElementById('archivoRespaldo').click()" class="secondary">📥 Importar Respaldo (.json)</button>
+    <input type="file" id="archivoRespaldo" accept=".json" style="display:none;" onchange="importarRespaldo(event)" />
+  </div>
+  <div class="config-section">
+    <h3>Unidades de Medida</h3>
+    <div style="display:flex; gap:8px; margin-top:10px;">
+      <input type="text" id="nuevaUnidad" placeholder="Ej: caja, bandeja..." style="flex:1;" />
+      <button type="button" onclick="agregarUnidad()" style="margin-top:0;">Agregar</button>
+    </div>
+    <div id="listaUnidades" style="margin-top:12px;"></div>
+  </div>
+  <div class="config-section">
+    <h3>Lugares de Almacenamiento</h3>
+    <div style="display:flex; gap:8px; margin-top:10px;">
+      <input type="text" id="nuevoAlmacen" placeholder="Ej: Congelador 1..." style="flex:1;" />
+      <button type="button" onclick="agregarAlmacenamiento()" style="margin-top:0;">Agregar</button>
+    </div>
+    <div id="listaAlmacenamientos" style="margin-top:12px;"></div>
+  </div>
+</div>
+<script>
+  // === LIBRERÍAS ===
+  const { jsPDF } = window.jspdf;
+  // XLSX ya está disponible globalmente gracias a la librería externa
+
+  // === BASE DE DATOS FIJA (DATA MOD) ===
+  const db = {
+    "CÁRNICOS EN TROZOS Y RODAJAS": {
+      "Alitas de pollo - local": { RECIBIDO: 7, PREPARADO: 7, LINEA: 1 },
+      "Poppers de pollo": { RECIBIDO: 7, PREPARADO: 7, LINEA: 1 },
+      "Pollo asado - importado": { RECIBIDO: 10, PREPARADO: 7, LINEA: 1 },
+      "Salchicha italiana": { RECIBIDO: 12, PREPARADO: 7, LINEA: 1 },
+      "Chorizo - local": { RECIBIDO: 7, PREPARADO: 4, LINEA: 1 },
+      "Chorizo Parrillero": { RECIBIDO: "Según empaque", PREPARADO: 6, LINEA: 1 },
+      "Carne de res - local": { RECIBIDO: 12, PREPARADO: 7, LINEA: 2 },
+      "Salchicha de cerdo": { RECIBIDO: 12, PREPARADO: 7, LINEA: 2 },
+      "Tocino": { RECIBIDO: 30, PREPARADO: 7, LINEA: 2 },
+      "Pepperoni de cerdo": { RECIBIDO: 30, PREPARADO: 7, LINEA: 2 },
+      "Jamón - local": { RECIBIDO: 14, PREPARADO: 7, LINEA: 2 }
+    },
+    "QUESOS": {
+      "Queso Mozzarella": { RECIBIDO: 14, PREPARADO: 7, LINEA: 1 },
+      "Queso en tiras": { RECIBIDO: 14, PREPARADO: 7, LINEA: 1 },
+      "Mezcla de 3 quesos (Asiago, Fontina, Provolone)": { RECIBIDO: 7, PREPARADO: 7, LINEA: 1 },
+      "Mezcla de 2 quesos (Romano y Parmesano)": { RECIBIDO: 7, PREPARADO: 7, LINEA: 1 }
+    },
+    "FRUTAS Y VEGETALES": {
+      "Champiñón": { RECIBIDO: "Según empaque", PREPARADO: 1, LINEA: "11:59 p. m." },
+      "Cebolla blanca/roja": { RECIBIDO: "Según empaque", PREPARADO: 2, LINEA: "11:59 p. m." },
+      "Pimiento rojo": { RECIBIDO: "Según empaque", PREPARADO: 2, LINEA: "11:59 p. m." },
+      "Pimiento verde": { RECIBIDO: "Según empaque", PREPARADO: 2, LINEA: "11:59 p. m." },
+      "Tomate": { RECIBIDO: "Según empaque", PREPARADO: 2, LINEA: "11:59 p. m." },
+      "Jalapeños": { RECIBIDO: "Según empaque", PREPARADO: 60, LINEA: "11:59 p. m." },
+      "Aceituna negra": { RECIBIDO: "Según empaque", PREPARADO: 7, LINEA: 2 },
+      "Aceituna verde": { RECIBIDO: "Según empaque", PREPARADO: 7, LINEA: 2 },
+      "Piña - lata": { RECIBIDO: "Según empaque", PREPARADO: 15, LINEA: 2 },
+      "Pepperoncini": { RECIBIDO: "Según empaque", PREPARADO: 15, LINEA: "11:59 p. m." }
+    },
+    "SALSAS": {
+      "Salsa pizza - lata": { RECIBIDO: "Según empaque", PREPARADO: "10 horas", LINEA: "10 horas" },
+      "Salsa de mayonesa con ají limo": { RECIBIDO: "Según empaque", PREPARADO: 7, LINEA: "11:59 p. m." },
+      "Salsa rosada (1kg)": { RECIBIDO: "Según empaque", PREPARADO: 7, LINEA: "11:59 p. m." },
+      "Salsa rosada (0.5 kg)": { RECIBIDO: "Según empaque", PREPARADO: 7, LINEA: "11:59 p. m." },
+      "Salsa Parrillera": { RECIBIDO: "Según empaque", PREPARADO: 3, LINEA: "11:59 p. m." },
+      "Salsa de ajo (botella - granel)": { RECIBIDO: "Según empaque", PREPARADO: 21, LINEA: "11:59 p. m." },
+      "Salsa de mango habanero (bolsa)": { RECIBIDO: "Según empaque", PREPARADO: 7, LINEA: "11:59 p. m." },
+      "Salsa Ranch": { RECIBIDO: "Según empaque", PREPARADO: 7, LINEA: "11:59 p. m." },
+      "Salsa Bechamel": { RECIBIDO: "Según empaque", PREPARADO: 7, LINEA: "11:59 p. m." },
+      "Salsa Chimichurri": { RECIBIDO: "Según empaque", PREPARADO: 15, LINEA: 2 },
+      "Salsa de ajo (blister - cup)": { RECIBIDO: "Según empaque", PREPARADO: "Según empaque", LINEA: "11:59 p. m." },
+      "Salsa Parmesana (botella - granel)": { RECIBIDO: "Según empaque", PREPARADO: 21, LINEA: "11:59 p. m." },
+      "Salsa BBQ (blister - cup)": { RECIBIDO: "Según empaque", PREPARADO: "Según empaque", LINEA: "Según empaque" },
+      "Salsa BBQ (bolsa)": { RECIBIDO: "Según empaque", PREPARADO: 4, LINEA: 2 },
+      "Salsa Buffalo (blister - cup)": { RECIBIDO: "Según empaque", PREPARADO: "Según empaque", LINEA: "Según empaque" },
+      "Salsa de Miel Picante": { RECIBIDO: "Según empaque", PREPARADO: 7, LINEA: "11:59 p. m." }
+    },
+    "OTROS INSUMOS": {
+      "Dustinator": { RECIBIDO: "Según empaque", PREPARADO: 14, LINEA: 2 },
+      "Masa Croisant": { RECIBIDO: 5, PREPARADO: null, LINEA: "11:59 p. m." },
+      "Masa delgada - importada": { RECIBIDO: 30, PREPARADO: 3, LINEA: null },
+      "Azúcar glaseada (Icing) - local": { RECIBIDO: "Según empaque", PREPARADO: 30, LINEA: 2 },
+      "Cinamon Spreed": { RECIBIDO: "Según empaque", PREPARADO: 30, LINEA: 2 },
+      "Orégano - sachet": { RECIBIDO: "Según empaque", PREPARADO: "Según empaque", LINEA: "Según empaque" },
+      "Aji panca - sachet": { RECIBIDO: "Según empaque", PREPARADO: "Según empaque", LINEA: "Según empaque" },
+      "Orégano - granel": { RECIBIDO: "Según empaque", PREPARADO: "Según empaque", LINEA: "Según empaque" },
+      "Aji panca - granel": { RECIBIDO: "Según empaque", PREPARADO: "Según empaque", LINEA: "Según empaque" },
+      "Sazonador italiano": { RECIBIDO: "Según empaque", PREPARADO: 7, LINEA: 3 },
+      "Pasta de lasagna": { RECIBIDO: 10, PREPARADO: 8, LINEA: null },
+      "Tortilla": { RECIBIDO: "Según empaque", PREPARADO: 7, LINEA: "11:59 p. m." },
+      "Manjar Blanco": { RECIBIDO: "Según empaque", PREPARADO: 15, LINEA: 5 },
+      "Azúcar Impalpable": { RECIBIDO: "Según empaque", PREPARADO: 30, LINEA: 5 }
+    },
+    "PREPS": {
+      "Lasagna (All the meats/The Works/Americana)": { RECIBIDO: null, PREPARADO: 4, LINEA: null },
+      "Rollitos de Pepperoni/Jamón": { RECIBIDO: null, PREPARADO: "6 horas", LINEA: "6 horas" },
+      "Rollitos de Manjar": { RECIBIDO: null, PREPARADO: "6 horas", LINEA: "6 horas" },
+      "Rollitos de Canela": { RECIBIDO: null, PREPARADO: "6 horas", LINEA: "6 horas" }
+    }
+  };
+  // === FUNCIONES DE EXPORTACIÓN ===
+  function exportarPDF(tipo) {
+    const elementId = tipo === 'inventario' ? 'tablaInventario' : 'tablaImpulsados';
+    const titulo = tipo === 'inventario' ? 'Inventario de Insumos' : 'Insumos por Impulsar';
+    const element = document.getElementById(elementId).cloneNode(true);
+    const acciones = element.querySelectorAll('td:last-child, th:last-child');
+    acciones.forEach(c => c.remove());
+    const container = document.createElement('div');
+    container.style.padding = '20px';
+    container.innerHTML = `<h2 style="text-align:center;">${titulo}</h2>`;
+    container.appendChild(element);
+    document.body.appendChild(container);
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    html2canvas(container).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('landscape', 'mm', 'a4');
+      const imgWidth = 297;
+      const pageHeight = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      pdf.save(`${titulo.replace(/\s+/g, '_')}.pdf`);
+      document.body.removeChild(container);
+    });
+  }
+  function exportarExcel(tipo) {
+    const elementId = tipo === 'inventario' ? 'tablaInventario' : 'tablaImpulsados';
+    const table = document.getElementById(elementId).cloneNode(true);
+    const acciones = table.querySelectorAll('td:last-child, th:last-child');
+    acciones.forEach(c => c.remove());
+    const ws = XLSX.utils.table_to_sheet(table);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Insumos");
+    XLSX.writeFile(wb, `${tipo === 'inventario' ? 'Inventario' : 'Por_Impulsar'}.xlsx`);
+  }
+  function exportarRespaldo() {
+    const data = {
+      inventario: JSON.parse(localStorage.getItem("inventario")) || [],
+      unidades: JSON.parse(localStorage.getItem("unidades")) || ["kg", "g", "unid", "lt", "ml", "paquete", "lata", "bolsa"],
+      almacenes: JSON.parse(localStorage.getItem("almacenes")) || ["Congelador", "Refrigerado", "Seco", "En línea"]
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `respaldo_vida_util_${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function importarRespaldo(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        localStorage.setItem("inventario", JSON.stringify(data.inventario || []));
+        localStorage.setItem("unidades", JSON.stringify(data.unidades || ["kg", "g", "unid", "lt", "ml", "paquete", "lata", "bolsa"]));
+        localStorage.setItem("almacenes", JSON.stringify(data.almacenes || ["Congelador", "Refrigerado", "Seco", "En línea"]));
+        alert("Respaldo importado correctamente. La página se recargará.");
+        location.reload();
+      } catch (err) {
+        alert("Error al importar el archivo. Asegúrese de que sea un respaldo válido.");
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+  // === FUNCIONES PRINCIPALES ===
+  function cargarConfiguraciones() {
+    const unidades = JSON.parse(localStorage.getItem("unidades")) || ["kg", "g", "unid", "lt", "ml", "paquete", "lata", "bolsa"];
+    const almacenes = JSON.parse(localStorage.getItem("almacenes")) || ["Congelador", "Refrigerado", "Seco", "En línea"];
+    localStorage.setItem("unidades", JSON.stringify(unidades));
+    localStorage.setItem("almacenes", JSON.stringify(almacenes));
+    return { unidades, almacenes };
+  }
+  function guardarConfiguraciones(config) {
+    localStorage.setItem("unidades", JSON.stringify(config.unidades));
+    localStorage.setItem("almacenes", JSON.stringify(config.almacenes));
+  }
+  function cargarInventario() {
+    const data = JSON.parse(localStorage.getItem("inventario")) || [];
+    return data.map(item => {
+      if (typeof item.fechaVencimiento === 'string') {
+        const fecha = new Date(item.fechaVencimiento);
+        if (fecha.toString() !== 'Invalid Date') {
+          item.fechaVencimiento = fecha;
+        } else {
+          item.fechaVencimiento = null;
+        }
+      }
+      return item;
+    });
+  }
+  let config = cargarConfiguraciones();
+  let inventario = cargarInventario();
+  let modoEdicion = false;
+  let mesCalendario = new Date().getMonth();
+  let anioCalendario = new Date().getFullYear();
+  let ordenInventario = 'asc';
+  let ordenImpulsados = 'asc';
+  function calcularEstadoYDias(item) {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    let estado = "empaque";
+    let diasRestantes = null;
+    if (item.fechaVencimiento instanceof Date && !isNaN(item.fechaVencimiento)) {
+      const diffTime = item.fechaVencimiento.getTime() - hoy.getTime();
+      diasRestantes = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (diasRestantes > 0) estado = "ok";
+      else if (diasRestantes === 0) estado = "hoy";
+      else estado = "vencido";
+    }
+    return { estado, diasRestantes };
+  }
+  function cargarSelectsConfig() {
+    const selUnidad = document.getElementById("unidad");
+    const selAlmacen = document.getElementById("almacenamiento");
+    selUnidad.innerHTML = '<option value="">-- Seleccionar --</option>';
+    selAlmacen.innerHTML = '<option value="">-- Seleccionar --</option>';
+    config.unidades.forEach(u => {
+      const opt = document.createElement("option");
+      opt.value = u;
+      opt.textContent = u;
+      selUnidad.appendChild(opt);
+    });
+    config.almacenes.forEach(a => {
+      const opt = document.createElement("option");
+      opt.value = a;
+      opt.textContent = a;
+      selAlmacen.appendChild(opt);
+    });
+  }
+  document.getElementById("categoria").addEventListener("change", function () {
+    toggleInsumoInput();
+    verificarMostrarFechaManual();
+  });
+  document.getElementById("insumoSelect").addEventListener("change", verificarMostrarFechaManual);
+  document.getElementById("etapa").addEventListener("change", verificarMostrarFechaManual);
+  function toggleInsumoInput() {
+    const cat = document.getElementById("categoria").value;
+    const select = document.getElementById("insumoSelect");
+    const input = document.getElementById("insumoInput");
+    if (cat === "OTRO") {
+      select.style.display = "none";
+      input.style.display = "block";
+      input.required = true;
+      select.required = false;
+    } else {
+      input.style.display = "none";
+      select.style.display = "block";
+      input.required = false;
+      select.required = true;
+      select.innerHTML = '<option value="">-- Seleccionar --</option>';
+      select.disabled = !cat;
+      if (cat && db[cat]) {
+        Object.keys(db[cat]).forEach(nombre => {
+          const opt = document.createElement("option");
+          opt.value = nombre;
+          opt.textContent = nombre;
+          select.appendChild(opt);
+        });
+      }
+    }
+  }
+  function verificarMostrarFechaManual() {
+    const cat = document.getElementById("categoria").value;
+    const insumo = cat === "OTRO" ? document.getElementById("insumoInput").value : document.getElementById("insumoSelect").value;
+    const etapa = document.getElementById("etapa").value;
+    let mostrar = false;
+    if (cat === "OTRO") {
+      mostrar = true;
+    } else if (cat && insumo && etapa && db[cat] && db[cat][insumo]) {
+      const vidaUtil = db[cat][insumo][etapa];
+      if (vidaUtil === "Según empaque" || vidaUtil === null || vidaUtil === undefined) {
+        mostrar = true;
+      }
+    }
+    document.getElementById("fechaVencimientoManual").style.display = mostrar ? "block" : "none";
+  }
+  function getInsumoValue() {
+    return document.getElementById("categoria").value === "OTRO"
+      ? document.getElementById("insumoInput").value.trim()
+      : document.getElementById("insumoSelect").value;
+  }
+  function setInsumoValue(categoria, insumoNombre) {
+    const select = document.getElementById("insumoSelect");
+    const input = document.getElementById("insumoInput");
+    if (categoria === "OTRO") {
+      document.getElementById("categoria").value = "OTRO";
+      toggleInsumoInput();
+      setTimeout(() => input.value = insumoNombre, 10);
+    } else {
+      document.getElementById("categoria").value = categoria;
+      toggleInsumoInput();
+      setTimeout(() => select.value = insumoNombre, 10);
+    }
+  }
+  function calcularFechaVencimiento(categoria, insumo, etapa, fechaIngresoStr, fechaManualStr) {
+    if (fechaManualStr) {
+      const [a, m, d] = fechaManualStr.split('-').map(Number);
+      return new Date(a, m - 1, d);
+    }
+    if (categoria === "OTRO") return null;
+    if (!db[categoria] || !db[categoria][insumo]) return null;
+    const info = db[categoria][insumo];
+    const vidaUtil = info[etapa];
+    if (!vidaUtil || vidaUtil === "Según empaque") return null;
+    if (typeof vidaUtil === "string" && vidaUtil.includes("horas")) {
+      const horas = parseInt(vidaUtil);
+      const [a, m, d] = fechaIngresoStr.split('-').map(Number);
+      const fecha = new Date(a, m - 1, d);
+      fecha.setHours(fecha.getHours() + horas);
+      return fecha;
+    } else if (vidaUtil === "11:59 p. m.") {
+      const [a, m, d] = fechaIngresoStr.split('-').map(Number);
+      const fecha = new Date(a, m - 1, d);
+      fecha.setHours(23, 59, 0, 0);
+      return fecha;
+    } else {
+      const dias = parseInt(vidaUtil);
+      const [a, m, d] = fechaIngresoStr.split('-').map(Number);
+      const fecha = new Date(a, m - 1, d);
+      fecha.setDate(fecha.getDate() + dias);
+      return fecha;
+    }
+  }
+  function limpiarFormularioCompleto() {
+    document.getElementById("formulario").reset();
+    document.getElementById("registroId").value = "";
+    document.getElementById("tituloForm").textContent = "Registrar Insumo";
+    document.getElementById("formSection").classList.remove("modo-edicion");
+    document.getElementById("btnCancelar").style.display = "none";
+    document.getElementById("insumoSelect").disabled = true;
+    document.getElementById("fechaVencimientoManual").style.display = "none";
+    cargarSelectsConfig();
+  }
+  function resetForm() {
+    limpiarFormularioCompleto();
+  }
+  function guardarRegistro() {
+    const id = document.getElementById("registroId").value;
+    const cat = document.getElementById("categoria").value;
+    const insumo = getInsumoValue();
+    const etapa = document.getElementById("etapa").value;
+    const almacenamiento = document.getElementById("almacenamiento").value || "-";
+    const fechaIngreso = document.getElementById("fechaIngreso").value;
+    const fechaManual = document.getElementById("fechaVencimientoManual").value;
+    const cantidad = parseFloat(document.getElementById("cantidad").value);
+    const unidad = document.getElementById("unidad").value;
+    if (!cat || !insumo || !etapa || !fechaIngreso || !cantidad || !unidad) {
+      alert("Complete todos los campos obligatorios.");
+      return;
+    }
+    const fechaVencimiento = calcularFechaVencimiento(cat, insumo, etapa, fechaIngreso, fechaManual);
+    const registro = {
+      id: modoEdicion && id ? parseInt(id) : Date.now(),
+      categoria: cat,
+      insumo,
+      etapa,
+      almacenamiento,
+      fechaIngreso,
+      fechaVencimiento,
+      cantidad,
+      unidad,
+      fechaVencimientoManual: fechaManual || null,
+      impulsado: false
+    };
+    if (modoEdicion && id) {
+      const index = inventario.findIndex(item => item.id == id);
+      if (index !== -1) inventario[index] = registro;
+    } else {
+      inventario.push(registro);
+    }
+    localStorage.setItem("inventario", JSON.stringify(inventario));
+    renderizarVistas();
+    limpiarFormularioCompleto();
+  }
+  function editarRegistro(id) {
+    const item = inventario.find(i => i.id == id);
+    if (!item) return;
+    modoEdicion = true;
+    document.getElementById("tituloForm").textContent = "Editar Insumo";
+    document.getElementById("registroId").value = item.id;
+    document.getElementById("formSection").classList.add("modo-edicion");
+    document.getElementById("btnCancelar").style.display = "inline-block";
+    document.getElementById("categoria").value = item.categoria;
+    toggleInsumoInput();
+    setTimeout(() => {
+      if (item.categoria === "OTRO") {
+        document.getElementById("insumoInput").value = item.insumo;
+      } else {
+        document.getElementById("insumoSelect").value = item.insumo;
+      }
+      document.getElementById("etapa").value = item.etapa;
+      document.getElementById("almacenamiento").value = item.almacenamiento;
+      document.getElementById("fechaIngreso").value = item.fechaIngreso;
+      document.getElementById("fechaVencimientoManual").value = item.fechaVencimientoManual || "";
+      document.getElementById("cantidad").value = item.cantidad;
+      document.getElementById("unidad").value = item.unidad;
+      verificarMostrarFechaManual();
+    }, 20);
+  }
+  function cancelarEdicion() {
+    resetForm();
+  }
+  function eliminarRegistro(id) {
+    if (confirm("¿Eliminar este registro?")) {
+      inventario = inventario.filter(item => item.id !== id);
+      localStorage.setItem("inventario", JSON.stringify(inventario));
+      renderizarVistas();
+      resetForm();
+    }
+  }
+  function impulsarInsumo(id) {
+    const item = inventario.find(i => i.id == id);
+    if (!item) return;
+    item.impulsado = true;
+    localStorage.setItem("inventario", JSON.stringify(inventario));
+    renderizarTabla(); // Actualiza la tabla de inventario
+    renderizarTablaImpulsados(); // Actualiza la tabla de impulsados
+    cambiarVista('impulsados'); // Cambia a la vista de impulsados
+  }
+  function quitarDeImpulsados(id) {
+    const item = inventario.find(i => i.id == id);
+    if (item) {
+      item.impulsado = false;
+      localStorage.setItem("inventario", JSON.stringify(inventario));
+      renderizarTablaImpulsados();
+      renderizarTabla();
+    }
+  }
+  function ordenarInventario(orden) {
+    ordenInventario = orden;
+    aplicarFiltros();
+  }
+  function ordenarImpulsados(orden) {
+    ordenImpulsados = orden;
+    renderizarTablaImpulsados();
+  }
+  function renderizarTabla(filtrados = null) {
+    const data = filtrados !== null ? filtrados : inventario; // 👈 YA NO FILTRA POR !impulsado
+    const ordenados = [...data].sort((a, b) => {
+      const fechaA = a.fechaVencimiento || new Date(8640000000000000);
+      const fechaB = b.fechaVencimiento || new Date(8640000000000000);
+      return ordenInventario === 'asc' ? fechaA - fechaB : fechaB - fechaA;
+    });
+    const tbody = document.getElementById("cuerpoTabla");
+    tbody.innerHTML = "";
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    ordenados.forEach(item => {
+      let fechaVencimientoStr = "N/A";
+      let claseEstado = "";
+      let etiquetaManual = "";
+      if (item.fechaVencimiento instanceof Date && !isNaN(item.fechaVencimiento)) {
+        fechaVencimientoStr = item.fechaVencimiento.toLocaleDateString('es-PE');
+        if (item.fechaVencimientoManual) {
+          etiquetaManual = ' <span class="manual-tag">📅</span>';
+        }
+        const { estado } = calcularEstadoYDias(item);
+        claseEstado = estado;
+      }
+      const etapaTexto = { RECIBIDO: "Recibido", PREPARADO: "Preparado", LINEA: "En Línea" }[item.etapa] || item.etapa;
+      const { diasRestantes } = calcularEstadoYDias(item);
+      const diasTexto = diasRestantes !== null ? diasRestantes : "Empaque";
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${item.insumo}${item.impulsado ? ' <span style="color:#ff9800; font-size:12px;">🚀</span>' : ''}</td>
+        <td class="ocultar-movil">${etapaTexto}</td>
+        <td class="ocultar-movil">${item.fechaIngreso}</td>
+        <td>${fechaVencimientoStr}${etiquetaManual}</td>
+        <td>${item.cantidad}</td>
+        <td>${item.unidad}</td>
+        <td class="ocultar-movil">${item.almacenamiento}</td>
+        <td class="${claseEstado}">${diasTexto}</td>
+        <td class="acciones">
+          <button onclick="editarRegistro(${item.id})" title="Editar">✏️</button>
+          <button onclick="eliminarRegistro(${item.id})" class="danger" title="Eliminar">🗑️</button>
+          <button onclick="impulsarInsumo(${item.id})" class="impulsar" title="Impulsar">🚀</button>
+        </td>
+      `;
+      tbody.appendChild(fila);
+    });
+  }
+  function renderizarTablaImpulsados() {
+    const tbody = document.getElementById("cuerpoTablaImpulsados");
+    const mensaje = document.getElementById("mensajeVacioImpulsados");
+    tbody.innerHTML = "";
+    let impulsados = inventario.filter(item => item.impulsado);
+    impulsados = [...impulsados].sort((a, b) => {
+      const fechaA = a.fechaVencimiento || new Date(8640000000000000);
+      const fechaB = b.fechaVencimiento || new Date(8640000000000000);
+      return ordenImpulsados === 'asc' ? fechaA - fechaB : fechaB - fechaA;
+    });
+    if (impulsados.length === 0) {
+      mensaje.style.display = "block";
+      return;
+    }
+    mensaje.style.display = "none";
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    impulsados.forEach(item => {
+      let fechaVencimientoStr = "N/A";
+      let claseEstado = "";
+      let etiquetaManual = "";
+      if (item.fechaVencimiento instanceof Date && !isNaN(item.fechaVencimiento)) {
+        fechaVencimientoStr = item.fechaVencimiento.toLocaleDateString('es-PE');
+        if (item.fechaVencimientoManual) {
+          etiquetaManual = ' <span class="manual-tag">📅</span>';
+        }
+        const { estado } = calcularEstadoYDias(item);
+        claseEstado = estado;
+      }
+      const { diasRestantes } = calcularEstadoYDias(item);
+      const diasTexto = diasRestantes !== null ? diasRestantes : "Empaque";
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${item.insumo}</td>
+        <td>${fechaVencimientoStr}${etiquetaManual}</td>
+        <td>${item.cantidad}</td>
+        <td>${item.unidad}</td>
+        <td class="ocultar-movil">${item.almacenamiento}</td>
+        <td class="${claseEstado}">${diasTexto}</td>
+        <td class="acciones">
+          <button onclick="quitarDeImpulsados(${item.id})" class="secondary" title="Quitar">↩️</button>
+        </td>
+      `;
+      tbody.appendChild(fila);
+    });
+  }
+  function aplicarFiltros() {
+    const diasMax = document.getElementById("filtroDias").value;
+    let filtrados = inventario.filter(item => {
+      // ✅ Ya no excluimos impulsados
+      const { diasRestantes } = calcularEstadoYDias(item);
+      if (diasMax && diasRestantes !== null && diasRestantes > parseInt(diasMax)) return false;
+      if (diasMax && diasRestantes === null) return false;
+      return true;
+    });
+    renderizarTabla(filtrados);
+  }
+  function limpiarFiltros() {
+    document.getElementById("filtroDias").value = "";
+    renderizarTabla();
+  }
+  function renderizarCalendario() {
+    const fechaActual = new Date(anioCalendario, mesCalendario, 1);
+    const nombreMes = fechaActual.toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
+    document.getElementById("tituloMes").textContent = nombreMes;
+    const primerDia = new Date(anioCalendario, mesCalendario, 1).getDay();
+    const diasEnMes = new Date(anioCalendario, mesCalendario + 1, 0).getDate();
+    const hoy = new Date();
+    const porFecha = {};
+    inventario.forEach(item => {
+      if (item.fechaVencimiento) {
+        const key = item.fechaVencimiento.toISOString().split('T')[0];
+        if (!porFecha[key]) porFecha[key] = [];
+        porFecha[key].push(item);
+      }
+    });
+    const grid = document.getElementById("calendarioGrid");
+    grid.innerHTML = `
+      <div class="cal-dia-header">Dom</div>
+      <div class="cal-dia-header">Lun</div>
+      <div class="cal-dia-header">Mar</div>
+      <div class="cal-dia-header">Mié</div>
+      <div class="cal-dia-header">Jue</div>
+      <div class="cal-dia-header">Vie</div>
+      <div class="cal-dia-header">Sáb</div>
+    `;
+    const offset = (primerDia === 0) ? 6 : primerDia - 1;
+    for (let i = 0; i < offset; i++) {
+      grid.innerHTML += '<div class="cal-dia"></div>';
+    }
+    for (let dia = 1; dia <= diasEnMes; dia++) {
+      const fecha = new Date(anioCalendario, mesCalendario, dia);
+      const esHoy = fecha.toDateString() === hoy.toDateString();
+      const fechaKey = fecha.toISOString().split('T')[0];
+      const tieneEventos = porFecha[fechaKey] && porFecha[fechaKey].length > 0;
+      let eventosHtml = '';
+      if (tieneEventos) {
+        porFecha[fechaKey].forEach(item => {
+          eventosHtml += `<div class="cal-evento" title="${item.insumo}">${item.insumo}</div>`;
+        });
+      }
+      const estiloFondo = tieneEventos ? 'background: #f5f9f5;' : '';
+      grid.innerHTML += `
+        <div class="cal-dia ${esHoy ? 'cal-dia-hoy' : ''}" style="${estiloFondo}">
+          <div>${dia}</div>
+          ${eventosHtml}
+        </div>
+      `;
+    }
+  }
+  function cambiarMes(delta) {
+    mesCalendario += delta;
+    if (mesCalendario < 0) {
+      mesCalendario = 11;
+      anioCalendario--;
+    } else if (mesCalendario > 11) {
+      mesCalendario = 0;
+      anioCalendario++;
+    }
+    renderizarCalendario();
+  }
+  function renderizarConfiguraciones() {
+    const listaU = document.getElementById("listaUnidades");
+    listaU.innerHTML = "";
+    config.unidades.forEach((u, i) => {
+      const div = document.createElement("div");
+      div.style.display = "flex";
+      div.style.justifyContent = "space-between";
+      div.style.alignItems = "center";
+      div.style.padding = "6px 0";
+      div.innerHTML = `<span>${u}</span><button onclick="eliminarUnidad(${i})" class="danger" style="padding:4px 8px; font-size:12px;">Eliminar</button>`;
+      listaU.appendChild(div);
+    });
+    const listaA = document.getElementById("listaAlmacenamientos");
+    listaA.innerHTML = "";
+    config.almacenes.forEach((a, i) => {
+      const div = document.createElement("div");
+      div.style.display = "flex";
+      div.style.justifyContent = "space-between";
+      div.style.alignItems = "center";
+      div.style.padding = "6px 0";
+      div.innerHTML = `<span>${a}</span><button onclick="eliminarAlmacenamiento(${i})" class="danger" style="padding:4px 8px; font-size:12px;">Eliminar</button>`;
+      listaA.appendChild(div);
+    });
+  }
+  function agregarUnidad() {
+    const input = document.getElementById("nuevaUnidad");
+    const valor = input.value.trim();
+    if (valor && !config.unidades.includes(valor)) {
+      config.unidades.push(valor);
+      guardarConfiguraciones(config);
+      renderizarConfiguraciones();
+      input.value = "";
+      cargarSelectsConfig();
+    }
+  }
+  function eliminarUnidad(index) {
+    if (confirm("¿Eliminar esta unidad?")) {
+      config.unidades.splice(index, 1);
+      guardarConfiguraciones(config);
+      renderizarConfiguraciones();
+      cargarSelectsConfig();
+    }
+  }
+  function agregarAlmacenamiento() {
+    const input = document.getElementById("nuevoAlmacen");
+    const valor = input.value.trim();
+    if (valor && !config.almacenes.includes(valor)) {
+      config.almacenes.push(valor);
+      guardarConfiguraciones(config);
+      renderizarConfiguraciones();
+      input.value = "";
+      cargarSelectsConfig();
+    }
+  }
+  function eliminarAlmacenamiento(index) {
+    if (confirm("¿Eliminar este lugar?")) {
+      config.almacenes.splice(index, 1);
+      guardarConfiguraciones(config);
+      renderizarConfiguraciones();
+      cargarSelectsConfig();
+    }
+  }
+  function renderizarVistas() {
+    renderizarTabla();
+    renderizarTablaImpulsados();
+    renderizarCalendario();
+  }
+  function cambiarVista(vista) {
+    document.querySelectorAll(".container").forEach(el => el.classList.remove("active-view"));
+    document.querySelectorAll(".navbar button").forEach(btn => btn.classList.remove("active"));
+    if (vista === "calendario") {
+      document.getElementById("vistaCalendario").classList.add("active-view");
+      document.getElementById("btnCalendario").classList.add("active");
+      renderizarCalendario();
+    } else if (vista === "inventario") {
+      document.getElementById("vistaInventario").classList.add("active-view");
+      document.getElementById("btnInventario").classList.add("active");
+      cargarSelectsConfig();
+    } else if (vista === "impulsados") {
+      document.getElementById("vistaImpulsados").classList.add("active-view");
+      document.getElementById("btnImpulsados").classList.add("active");
+      renderizarTablaImpulsados();
+    } else if (vista === "configuraciones") {
+      document.getElementById("vistaConfiguraciones").classList.add("active-view");
+      document.getElementById("btnConfig").classList.add("active");
+      renderizarConfiguraciones();
+    }
+  }
+  renderizarVistas();
+  cambiarVista('calendario');
+</script>
+</body>
+</html>
