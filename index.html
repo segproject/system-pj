@@ -523,10 +523,12 @@
             <button onclick="agregarALista()">➕ Agregar a lista</button>
             <button class="btn-limpiar" onclick="borrarLista()">🗑️ Borrar lista</button>
             <button onclick="descargarExcel()">📥 Descargar a Excel</button>
+            <button onclick="guardarLista()">💾 Guardar lista</button>
+            <button onclick="cargarLista()">📂 Cargar lista</button>
         </div>
         <div class="tienda-tabla-container">
             <table class="tienda-tabla" id="tablaIngresoTienda">
-                <thead>
+                <thead id="tablaIngresoTiendaHead">
                     <tr>
                         <th>Producto</th>
                         <th>Fecha recibido</th>
@@ -569,7 +571,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script>
         // === Contraseña para acceder a la sección tienda ===
-        const CLAVE_TIENDA = "pj2025"; // 🔐 Cambia esta clave si lo deseas
+        const CLAVE_TIENDA = "pizza2025"; // 🔐 Cambia esta clave si lo deseas
 
         function validarClaveTienda() {
             const input = document.getElementById('claveTienda').value;
@@ -653,17 +655,20 @@
 
         // === Funciones de la sección TIENDA ===
         let listaIngreso = [];
+
         function formatearFecha(fechaStr) {
             if (!fechaStr) return "-";
             const [y, m, d] = fechaStr.split('-');
             return `${d}/${m}/${y}`;
         }
+
         function sumarDiasISO(fechaISO, dias) {
             const [y, m, d] = fechaISO.split('-').map(Number);
             const fecha = new Date(Date.UTC(y, m - 1, d));
             fecha.setUTCDate(fecha.getUTCDate() + dias);
             return fecha.toISOString().split('T')[0];
         }
+
         function calcularVencimientoRecibido(producto, fechaRecibido) {
             const info = vidaUtil[producto];
             if (!info || !fechaRecibido) return null;
@@ -675,6 +680,7 @@
                 return "N/A";
             }
         }
+
         function agregarALista() {
             const producto = document.getElementById('tiendaProducto').value;
             const fechaRecibido = document.getElementById('tiendaFechaRecibido').value;
@@ -688,28 +694,65 @@
                 producto,
                 fechaRecibido,
                 vidaUtil: vidaUtilDias,
-                vencimiento
+                vencimiento,
+                verificado: false
             });
             renderizarTablaTienda();
         }
-        function renderizarTablaTienda() {
+
+        function renderizarTablaTienda(modoVerificacion = false) {
+            const thead = document.getElementById('tablaIngresoTiendaHead');
             const tbody = document.getElementById('cuerpoTablaTienda');
-            tbody.innerHTML = '';
-            listaIngreso.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${item.producto}</td>
-                    <td>${formatearFecha(item.fechaRecibido)}</td>
-                    <td>${item.vidaUtil}</td>
-                    <td>${item.vencimiento === "Según empaque" ? "Según empaque" : formatearFecha(item.vencimiento)}</td>
+            
+            if (modoVerificacion) {
+                thead.innerHTML = `
+                    <tr>
+                        <th>✔</th>
+                        <th>Producto</th>
+                        <th>Fecha recibido</th>
+                        <th>Vida útil (días)</th>
+                        <th>Fecha vencimiento</th>
+                    </tr>
                 `;
+            } else {
+                thead.innerHTML = `
+                    <tr>
+                        <th>Producto</th>
+                        <th>Fecha recibido</th>
+                        <th>Vida útil (días)</th>
+                        <th>Fecha vencimiento</th>
+                    </tr>
+                `;
+            }
+
+            tbody.innerHTML = '';
+            listaIngreso.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                if (modoVerificacion) {
+                    tr.innerHTML = `
+                        <td><input type="checkbox" ${item.verificado ? 'checked' : ''} onchange="toggleVerificado(${index})"></td>
+                        <td>${item.producto}</td>
+                        <td>${formatearFecha(item.fechaRecibido)}</td>
+                        <td>${item.vidaUtil}</td>
+                        <td>${item.vencimiento === "Según empaque" ? "Según empaque" : formatearFecha(item.vencimiento)}</td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td>${item.producto}</td>
+                        <td>${formatearFecha(item.fechaRecibido)}</td>
+                        <td>${item.vidaUtil}</td>
+                        <td>${item.vencimiento === "Según empaque" ? "Según empaque" : formatearFecha(item.vencimiento)}</td>
+                    `;
+                }
                 tbody.appendChild(tr);
             });
         }
+
         function borrarLista() {
             listaIngreso = [];
             renderizarTablaTienda();
         }
+
         function descargarExcel() {
             if (listaIngreso.length === 0) {
                 alert("⚠️ La lista está vacía.");
@@ -727,6 +770,41 @@
             XLSX.writeFile(wb, "Ingreso_Tienda.xlsx");
         }
 
+        // === NUEVAS FUNCIONES: GUARDAR, CARGAR, VERIFICAR ===
+        function guardarLista() {
+            if (listaIngreso.length === 0) {
+                alert("⚠️ La lista está vacía. No hay nada que guardar.");
+                return;
+            }
+            localStorage.setItem('listaIngresoGuardada', JSON.stringify(listaIngreso));
+            alert("✅ Lista guardada exitosamente.");
+        }
+
+        function cargarLista() {
+            const guardada = localStorage.getItem('listaIngresoGuardada');
+            if (!guardada) {
+                alert("ℹ️ No hay ninguna lista guardada.");
+                return;
+            }
+            try {
+                listaIngreso = JSON.parse(guardada);
+                // Asegurar compatibilidad con ítems antiguos
+                listaIngreso = listaIngreso.map(item => ({
+                    ...item,
+                    verificado: item.verificado || false
+                }));
+                renderizarTablaTienda(true); // Modo con checklist
+                alert("✅ Lista cargada. Puede verificar los productos.");
+            } catch (e) {
+                alert("❌ Error al cargar la lista guardada.");
+            }
+        }
+
+        function toggleVerificado(index) {
+            listaIngreso[index].verificado = !listaIngreso[index].verificado;
+            localStorage.setItem('listaIngresoGuardada', JSON.stringify(listaIngreso));
+        }
+
         // === Funciones originales (sin cambios) ===
         const horariosCierre = {
             1: "21:59", // lunes
@@ -737,6 +815,7 @@
             6: "22:29", // sábado
             0: "22:29"  // domingo
         };
+
         function updateShelfLife() {
             const producto = document.getElementById('producto').value;
             const recibidoSection = document.getElementById('recibidoSection');
@@ -764,6 +843,7 @@
             p.style.display = (s.preparado === "Según empaque") ? 'block' : 'none';
             l.style.display = (s.linea === "Según empaque") ? 'block' : 'none';
         }
+
         function formatearHora(horaStr) {
             if (!horaStr) return "-";
             const [h, min] = horaStr.split(':');
@@ -772,11 +852,13 @@
             hh = hh % 12 || 12;
             return `${String(hh).padStart(2, '0')}:${min} ${ampm}`;
         }
+
         function obtenerNombreDia(fechaISO) {
             const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
             const fecha = new Date(`${fechaISO}T00:00:00-05:00`);
             return diasSemana[fecha.getDay()];
         }
+
         function obtenerNombreDiaCompleto(fechaISO, horaStr) {
             if (!fechaISO || !horaStr) return "día desconocido";
             const [h, min] = horaStr.split(':').map(Number);
@@ -785,6 +867,7 @@
             const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
             return diasSemana[fecha.getUTCDay()];
         }
+
         function sumarDiasYHorasISO(fechaISO, horaStr, dias, horas) {
             const [h, min] = horaStr.split(':').map(Number);
             const [y, m, d] = fechaISO.split('-').map(Number);
@@ -801,6 +884,7 @@
                 horaMostrar: formatearHora(horaISOOut)
             };
         }
+
         function obtenerUltimoMinutoDia(fechaISO) {
             const horaCierre = obtenerHoraCierre(fechaISO);
             return {
@@ -810,6 +894,7 @@
                 horaMostrar: formatearHora(horaCierre)
             };
         }
+
         function montarFilaSticker(etiqueta, fecha, hora, fechaVenc, horaVenc) {
             return `<tr>
                 <td class="label">${etiqueta}</td>
@@ -819,11 +904,13 @@
                 <td class="time-col"><span>${horaVenc}</span></td>
             </tr>`;
         }
+
         function obtenerHoraCierre(fechaYYYYMMDD) {
             const fecha = new Date(`${fechaYYYYMMDD}T00:00:00-05:00`);
             const diaSemana = fecha.getDay();
             return horariosCierre[diaSemana];
         }
+
         function calcularVencimientos() {
             const producto = document.getElementById('producto').value;
             if (!producto) {
@@ -1052,6 +1139,7 @@
             stickerContainer.classList.add('fade-in');
             stickerContainer.scrollIntoView({ behavior: 'smooth' });
         }
+
         function limpiarFormulario() {
             document.getElementById('producto').value = "";
             document.getElementById('recibidoSection').innerHTML = '';
