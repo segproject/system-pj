@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>📅 Fechador - PJ RP</title>
+    <title>📅 System - PJ RP</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -170,6 +170,20 @@
         }
         .tienda-tabla tr:last-child td {
             border-bottom: none;
+        }
+        /* Botón eliminar */
+        .btn-eliminar {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-eliminar:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
         }
         /* Sticker */
         .sticker-container {
@@ -534,6 +548,7 @@
                         <th>Fecha recibido</th>
                         <th>Vida útil (días)</th>
                         <th>Fecha vencimiento</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody id="cuerpoTablaTienda"></tbody>
@@ -712,6 +727,7 @@
                         <th>Fecha recibido</th>
                         <th>Vida útil (días)</th>
                         <th>Fecha vencimiento</th>
+                        <th>Acción</th>
                     </tr>
                 `;
             } else {
@@ -721,6 +737,7 @@
                         <th>Fecha recibido</th>
                         <th>Vida útil (días)</th>
                         <th>Fecha vencimiento</th>
+                        <th>Acción</th>
                     </tr>
                 `;
             }
@@ -728,20 +745,27 @@
             tbody.innerHTML = '';
             listaIngreso.forEach((item, index) => {
                 const tr = document.createElement('tr');
+                const fechaRecibido = formatearFecha(item.fechaRecibido);
+                const fechaVencimiento = item.vencimiento === "Según empaque" 
+                    ? "Según empaque" 
+                    : formatearFecha(item.vencimiento);
+
                 if (modoVerificacion) {
                     tr.innerHTML = `
                         <td><input type="checkbox" ${item.verificado ? 'checked' : ''} onchange="toggleVerificado(${index})"></td>
                         <td>${item.producto}</td>
-                        <td>${formatearFecha(item.fechaRecibido)}</td>
+                        <td>${fechaRecibido}</td>
                         <td>${item.vidaUtil}</td>
-                        <td>${item.vencimiento === "Según empaque" ? "Según empaque" : formatearFecha(item.vencimiento)}</td>
+                        <td>${fechaVencimiento}</td>
+                        <td><button class="btn-eliminar" onclick="eliminarProducto(${index})">🗑️</button></td>
                     `;
                 } else {
                     tr.innerHTML = `
                         <td>${item.producto}</td>
-                        <td>${formatearFecha(item.fechaRecibido)}</td>
+                        <td>${fechaRecibido}</td>
                         <td>${item.vidaUtil}</td>
-                        <td>${item.vencimiento === "Según empaque" ? "Según empaque" : formatearFecha(item.vencimiento)}</td>
+                        <td>${fechaVencimiento}</td>
+                        <td><button class="btn-eliminar" onclick="eliminarProducto(${index})">🗑️</button></td>
                     `;
                 }
                 tbody.appendChild(tr);
@@ -749,8 +773,15 @@
         }
 
         function borrarLista() {
-            listaIngreso = [];
-            renderizarTablaTienda();
+            if (listaIngreso.length === 0) {
+                alert("ℹ️ La lista ya está vacía.");
+                return;
+            }
+            if (confirm("¿Está seguro de que desea borrar toda la lista?")) {
+                listaIngreso = [];
+                renderizarTablaTienda();
+                localStorage.removeItem('listaIngresoGuardada');
+            }
         }
 
         function descargarExcel() {
@@ -770,7 +801,7 @@
             XLSX.writeFile(wb, "Ingreso_Tienda.xlsx");
         }
 
-        // === NUEVAS FUNCIONES: GUARDAR, CARGAR, VERIFICAR ===
+        // === NUEVAS FUNCIONES: GUARDAR, CARGAR, VERIFICAR, ELIMINAR ===
         function guardarLista() {
             if (listaIngreso.length === 0) {
                 alert("⚠️ La lista está vacía. No hay nada que guardar.");
@@ -794,7 +825,7 @@
                     verificado: item.verificado || false
                 }));
                 renderizarTablaTienda(true); // Modo con checklist
-                alert("✅ Lista cargada. Puede verificar los productos.");
+                alert("✅ Lista cargada. Puede verificar o eliminar productos.");
             } catch (e) {
                 alert("❌ Error al cargar la lista guardada.");
             }
@@ -803,6 +834,19 @@
         function toggleVerificado(index) {
             listaIngreso[index].verificado = !listaIngreso[index].verificado;
             localStorage.setItem('listaIngresoGuardada', JSON.stringify(listaIngreso));
+        }
+
+        function eliminarProducto(index) {
+            if (confirm("¿Está seguro de que desea eliminar este producto de la lista?")) {
+                listaIngreso.splice(index, 1);
+                // Detectar modo actual
+                const modoVerificacion = document.querySelector('#tablaIngresoTiendaHead th:first-child').textContent.trim() === '✔';
+                renderizarTablaTienda(modoVerificacion);
+                // Actualizar localStorage si existe
+                if (localStorage.getItem('listaIngresoGuardada')) {
+                    localStorage.setItem('listaIngresoGuardada', JSON.stringify(listaIngreso));
+                }
+            }
         }
 
         // === Funciones originales (sin cambios) ===
@@ -1161,4 +1205,3 @@
     </script>
 </body>
 </html>
-
