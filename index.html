@@ -535,7 +535,7 @@
         </div>
         <div class="tienda-btns">
             <button onclick="agregarALista()">➕ Agregar a lista</button>
-            <button class="btn-limpiar" onclick="borrarLista()">🗑️ Borrar lista</button>
+            <button class="btn-limpiar" onclick="nuevaLista()">📄 Nueva lista</button>
             <button onclick="descargarExcel()">📥 Descargar a Excel</button>
             <button onclick="guardarLista()">💾 Guardar lista</button>
             <button onclick="cargarLista()">📂 Cargar lista</button>
@@ -772,15 +772,13 @@
             });
         }
 
-        function borrarLista() {
+        function nuevaLista() {
             if (listaIngreso.length === 0) {
-                alert("ℹ️ La lista ya está vacía.");
                 return;
             }
-            if (confirm("¿Está seguro de que desea borrar toda la lista?")) {
+            if (confirm("¿Desea empezar una nueva lista? La lista actual se perderá si no está guardada.")) {
                 listaIngreso = [];
                 renderizarTablaTienda();
-                localStorage.removeItem('listaIngresoGuardada');
             }
         }
 
@@ -819,12 +817,11 @@
             }
             try {
                 listaIngreso = JSON.parse(guardada);
-                // Asegurar compatibilidad con ítems antiguos
                 listaIngreso = listaIngreso.map(item => ({
                     ...item,
                     verificado: item.verificado || false
                 }));
-                renderizarTablaTienda(true); // Modo con checklist
+                renderizarTablaTienda(true);
                 alert("✅ Lista cargada. Puede verificar o eliminar productos.");
             } catch (e) {
                 alert("❌ Error al cargar la lista guardada.");
@@ -839,10 +836,8 @@
         function eliminarProducto(index) {
             if (confirm("¿Está seguro de que desea eliminar este producto de la lista?")) {
                 listaIngreso.splice(index, 1);
-                // Detectar modo actual
                 const modoVerificacion = document.querySelector('#tablaIngresoTiendaHead th:first-child').textContent.trim() === '✔';
                 renderizarTablaTienda(modoVerificacion);
-                // Actualizar localStorage si existe
                 if (localStorage.getItem('listaIngresoGuardada')) {
                     localStorage.setItem('listaIngresoGuardada', JSON.stringify(listaIngreso));
                 }
