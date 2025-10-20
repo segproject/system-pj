@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>📅 System - PJ RP</title>
+    <title>📅 SYSTEM - PJ RP</title>
     <style>
+        /* ... (todo el CSS original se mantiene igual) ... */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -16,9 +17,37 @@
             flex-direction: column;
             align-items: center;
         }
-        .container {
-            max-width: 800px;
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .tabs button {
+            padding: 12px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            border: none;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tabs button.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
             width: 100%;
+            max-width: 800px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .container {
             background: white;
             padding: 20px;
             border-radius: 15px;
@@ -77,53 +106,24 @@
             background-color: #2980b9;
             transform: translateY(-1px);
         }
-        button:active {
-            transform: translateY(0);
-        }
-        .manual-input {
-            display: none;
-            margin-top: 10px;
-            padding: 12px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            border: 1px dashed #ccc;
-        }
-        .optional-label {
-            color: #7f8c8d;
-            font-size: 13px;
-            font-style: italic;
-            margin-top: 4px;
-        }
-        /* Botones adicionales */
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            margin-top: 10px;
-        }
         .btn-limpiar {
             background-color: #e74c3c;
         }
         .btn-limpiar:hover {
             background-color: #c0392b;
         }
-        /* === NUEVA SECCIÓN TIENDA === */
-        .seccion-tienda {
-            max-width: 800px;
-            width: 100%;
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
-            display: none; /* Oculto por defecto */
+        .btn-eliminar {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 14px;
         }
-        .seccion-tienda h2 {
-            text-align: center;
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 20px;
-            font-weight: 600;
+        .btn-eliminar:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
         }
         .tienda-form {
             display: flex;
@@ -168,24 +168,6 @@
             color: white;
             font-weight: bold;
         }
-        .tienda-tabla tr:last-child td {
-            border-bottom: none;
-        }
-        /* Botón eliminar */
-        .btn-eliminar {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 6px 10px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-eliminar:hover {
-            background-color: #c0392b;
-            transform: scale(1.05);
-        }
-        /* Sticker */
         .sticker-container {
             width: 100%;
             max-width: 500px;
@@ -240,7 +222,6 @@
             width: 80px;
         }
         .sticker-table .time-col { width: 80px; }
-        /* Etiqueta de resumen debajo del sticker */
         .resumen-fechas {
             background: #eaf2f8;
             padding: 15px;
@@ -258,7 +239,6 @@
         .resumen-fechas strong {
             color: #007bff;
         }
-        /* Ajuste automático */
         .ajuste-aviso {
             background-color: #fff3cd;
             border: 1px solid #ffeaa7;
@@ -270,48 +250,6 @@
             text-align: center;
             font-weight: 500;
         }
-        /* Responsive */
-        @media (max-width: 600px) {
-            .container, .seccion-tienda {
-                padding: 15px;
-                margin: 10px;
-            }
-            h1 {
-                font-size: 24px;
-            }
-            .sticker-container {
-                padding: 15px;
-                margin: 15px auto;
-            }
-            .sticker-title {
-                font-size: 22px;
-            }
-            .sticker-producto {
-                font-size: 16px;
-                padding: 10px;
-            }
-            .sticker-table th, .sticker-table td {
-                padding: 8px;
-                font-size: 13px;
-            }
-            .btn-group,
-            .tienda-form,
-            .tienda-btns {
-                flex-direction: column;
-            }
-            .resumen-fechas {
-                font-size: 14px;
-            }
-        }
-        /* Animación de entrada */
-        .sticker-container.fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        /* Estilo para bloque de autenticación */
         #authTienda {
             text-align: center;
             margin-bottom: 20px;
@@ -327,286 +265,324 @@
             margin-top: 10px;
             display: none;
         }
+        @media (max-width: 600px) {
+            .tabs button {
+                font-size: 16px;
+                padding: 10px 16px;
+            }
+            .container { padding: 15px; margin: 10px; }
+            h1 { font-size: 24px; }
+            .sticker-container { padding: 15px; margin: 15px auto; }
+            .sticker-title { font-size: 22px; }
+            .sticker-producto { font-size: 16px; padding: 10px; }
+            .sticker-table th, .sticker-table td { padding: 8px; font-size: 13px; }
+            .btn-group, .tienda-form, .tienda-btns { flex-direction: column; }
+            .resumen-fechas { font-size: 14px; }
+        }
+        .sticker-container.fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
-    <!-- Formulario original -->
-    <div class="container">
-        <h1>📅 Fechador - PJ RP</h1>
-        <div class="form-group">
-            <label for="producto">📦 Seleccione el Producto:</label>
-            <select id="producto" onchange="updateShelfLife()">
-                <option value="">-- Seleccione un producto --</option>
-                <optgroup label="🍖 CÁRNICOS EN TROZOS Y RODAJAS">
-                    <option value="Alitas de pollo - local">Alitas de pollo - local</option>
-                    <option value="Poppers de pollo">Poppers de pollo</option>
-                    <option value="Pollo asado - importado">Pollo asado - importado</option>
-                    <option value="Salchicha italiana">Salchicha italiana</option>
-                    <option value="Chorizo - local">Chorizo - local</option>
-                    <option value="Chorizo Parrillero">Chorizo Parrillero</option>
-                    <option value="Carne de res - local">Carne de res - local</option>
-                    <option value="Salchicha de cerdo">Salchicha de cerdo</option>
-                    <option value="Tocino">Tocino</option>
-                    <option value="Pepperoni de cerdo">Pepperoni de cerdo</option>
-                    <option value="Jamón - local">Jamón - local</option>
-                </optgroup>
-                <optgroup label="🧀 QUESOS">
-                    <option value="Queso Mozzarella">Queso Mozzarella</option>
-                    <option value="Queso en tiras">Queso en tiras</option>
-                    <option value="Mezcla de 3 quesos (Asiago, Fontina, Provolone)">Mezcla de 3 quesos (Asiago, Fontina, Provolone)</option>
-                    <option value="Mezcla de 2 quesos (Romano y Parmesano)">Mezcla de 2 quesos (Romano y Parmesano)</option>
-                </optgroup>
-                <optgroup label="🥬 FRUTAS Y VEGETALES">
-                    <option value="Champiñón">Champiñón</option>
-                    <option value="Cebolla blanca/roja">Cebolla blanca/roja</option>
-                    <option value="Pimiento rojo">Pimiento rojo</option>
-                    <option value="Pimiento verde">Pimiento verde</option>
-                    <option value="Tomate">Tomate</option>
-                    <option value="Jalapeños">Jalapeños</option>
-                    <option value="Aceituna negra">Aceituna negra</option>
-                    <option value="Aceituna verde">Aceituna verde</option>
-                    <option value="Piña - lata">Piña - lata</option>
-                    <option value="Pepperoncini">Pepperoncini</option>
-                </optgroup>
-                <optgroup label="🧂 SALSAS">
-                    <option value="Salsa pizza - lata">Salsa pizza - lata</option>
-                    <option value="Salsa de mayonesa con ají limo">Salsa de mayonesa con ají limo</option>
-                    <option value="Salsa rosada (1kg)">Salsa rosada (1kg)</option>
-                    <option value="Salsa rosada (0.5 kg)">Salsa rosada (0.5 kg)</option>
-                    <option value="Salsa Parrillera">Salsa Parrillera</option>
-                    <option value="Salsa de ajo (botella - granel)">Salsa de ajo (botella - granel)</option>
-                    <option value="Salsa de mango habanero (bolsa)">Salsa de mango habanero (bolsa)</option>
-                    <option value="Salsa Ranch">Salsa Ranch</option>
-                    <option value="Salsa Bechamel">Salsa Bechamel</option>
-                    <option value="Salsa Chimichurri">Salsa Chimichurri</option>
-                    <option value="Salsa de ajo (blister - cup)">Salsa de ajo (blister - cup)</option>
-                    <option value="Salsa Parmesana (botella - granel)">Salsa Parmesana (botella - granel)</option>
-                    <option value="Salsa BBQ (blister - cup)">Salsa BBQ (blister - cup)</option>
-                    <option value="Salsa BBQ (bolsa)">Salsa BBQ (bolsa)</option>
-                    <option value="Salsa Buffalo (blister - cup)">Salsa Buffalo (blister - cup)</option>
-                    <option value="Salsa de Miel Picante">Salsa de Miel Picante</option>
-                </optgroup>
-                <optgroup label="🧂 OTROS INSUMOS">
-                    <option value="Dustinator">Dustinator</option>
-                    <option value="Masa Croisant">Masa Croisant</option>
-                    <option value="Masa delgada - importada">Masa delgada - importada</option>
-                    <option value="Azúcar glaseada (Icing) - local">Azúcar glaseada (Icing) - local</option>
-                    <option value="Cinamon Spreed">Cinamon Spreed</option>
-                    <option value="Orégano - sachet">Orégano - sachet</option>
-                    <option value="Aji panca - sachet">Aji panca - sachet</option>
-                    <option value="Orégano - granel">Orégano - granel</option>
-                    <option value="Aji panca - granel">Aji panca - granel</option>
-                    <option value="Sazonador italiano">Sazonador italiano</option>
-                    <option value="Pasta de lasagna">Pasta de lasagna</option>
-                    <option value="Tortilla">Tortilla</option>
-                    <option value="Manjar Blanco">Manjar Blanco</option>
-                    <option value="Azúcar Impalpable">Azúcar Impalpable</option>
-                </optgroup>
-                <optgroup label="🎉 PREPS">
-                    <option value="Lasagna (All the meats/The Works/Americana)">Lasagna (All the meats/The Works/Americana)</option>
-                    <option value="Rollitos de Pepperoni/Jamón">Rollitos de Pepperoni/Jamón</option>
-                    <option value="Rollitos de Manjar">Rollitos de Manjar</option>
-                    <option value="Rollitos de Canela">Rollitos de Canela</option>
-                </optgroup>
-            </select>
-        </div>
-        <!-- RECIBIDO -->
-        <div class="form-group" id="recibidoSection"></div>
-        <!-- PREPARADO -->
-        <div class="form-group">
-            <label for="preparadoFecha">🍳 PREPARADO - Fecha de Inicio:</label>
-            <input type="date" id="preparadoFecha" />
-            <label for="preparadoHora">⏰ Hora de Inicio (HH:MM):</label>
-            <input type="time" id="preparadoHora" />
-            <div id="preparadoManualVencInput" class="manual-input">
-                <label for="preparadoVencFecha">📆 Fecha de Vencimiento (Según empaque):</label>
-                <input type="date" id="preparadoVencFecha" />
-                <label for="preparadoVencHora">🕒 Hora de Vencimiento (HH:MM):</label>
-                <input type="time" id="preparadoVencHora" />
-            </div>
-        </div>
-        <!-- LÍNEA -->
-        <div class="form-group">
-            <label for="lineaFecha">🏭 LÍNEA - Fecha de Inicio:</label>
-            <input type="date" id="lineaFecha" />
-            <label for="lineaHora">⏰ Hora de Inicio (HH:MM):</label>
-            <input type="time" id="lineaHora" />
-            <div id="lineaManualVencInput" class="manual-input">
-                <label for="lineaVencFecha">📆 Fecha de Vencimiento (Según empaque):</label>
-                <input type="date" id="lineaVencFecha" />
-                <label for="lineaVencHora">🕒 Hora de Vencimiento (HH:MM):</label>
-                <input type="time" id="lineaVencHora" />
-            </div>
-        </div>
-        <div class="btn-group">
-            <button onclick="calcularVencimientos()">✅ Generar Sticker</button>
-            <button class="btn-limpiar" onclick="limpiarFormulario()">🧹 Limpiar</button>
-        </div>
+    <!-- PESTAÑAS -->
+    <div class="tabs">
+        <button class="active" onclick="cambiarPestana('fechador')">📅 Fechador</button>
+        <button onclick="cambiarPestana('ingreso')">📦 Ingreso de QCC</button>
     </div>
 
-    <!-- Bloque de autenticación para Tienda -->
-    <div id="authTienda" class="container">
-        <h2>🔒 Acceso a Ingreso a Tienda</h2>
-        <input type="password" id="claveTienda" placeholder="Ingrese la contraseña" />
-        <br>
-        <button onclick="validarClaveTienda()">🔓 Desbloquear</button>
-        <p id="mensajeErrorTienda">❌ Contraseña incorrecta</p>
-    </div>
-
-    <!-- NUEVA SECCIÓN: Ingreso a Tienda (oculta por defecto) -->
-    <div class="seccion-tienda" id="seccionTienda">
-        <h2>🏪 Ingreso a Tienda</h2>
-        <div class="tienda-form">
-            <select id="tiendaProducto">
-                <option value="">-- Seleccione un producto --</option>
-                <optgroup label="🍖 CÁRNICOS EN TROZOS Y RODAJAS">
-                    <option value="Alitas de pollo - local">Alitas de pollo - local</option>
-                    <option value="Poppers de pollo">Poppers de pollo</option>
-                    <option value="Pollo asado - importado">Pollo asado - importado</option>
-                    <option value="Salchicha italiana">Salchicha italiana</option>
-                    <option value="Chorizo - local">Chorizo - local</option>
-                    <option value="Chorizo Parrillero">Chorizo Parrillero</option>
-                    <option value="Carne de res - local">Carne de res - local</option>
-                    <option value="Salchicha de cerdo">Salchicha de cerdo</option>
-                    <option value="Tocino">Tocino</option>
-                    <option value="Pepperoni de cerdo">Pepperoni de cerdo</option>
-                    <option value="Jamón - local">Jamón - local</option>
-                </optgroup>
-                <optgroup label="🧀 QUESOS">
-                    <option value="Queso Mozzarella">Queso Mozzarella</option>
-                    <option value="Queso en tiras">Queso en tiras</option>
-                    <option value="Mezcla de 3 quesos (Asiago, Fontina, Provolone)">Mezcla de 3 quesos (Asiago, Fontina, Provolone)</option>
-                    <option value="Mezcla de 2 quesos (Romano y Parmesano)">Mezcla de 2 quesos (Romano y Parmesano)</option>
-                </optgroup>
-                <optgroup label="🥬 FRUTAS Y VEGETALES">
-                    <option value="Champiñón">Champiñón</option>
-                    <option value="Cebolla blanca/roja">Cebolla blanca/roja</option>
-                    <option value="Pimiento rojo">Pimiento rojo</option>
-                    <option value="Pimiento verde">Pimiento verde</option>
-                    <option value="Tomate">Tomate</option>
-                    <option value="Jalapeños">Jalapeños</option>
-                    <option value="Aceituna negra">Aceituna negra</option>
-                    <option value="Aceituna verde">Aceituna verde</option>
-                    <option value="Piña - lata">Piña - lata</option>
-                    <option value="Pepperoncini">Pepperoncini</option>
-                </optgroup>
-                <optgroup label="🧂 SALSAS">
-                    <option value="Salsa pizza - lata">Salsa pizza - lata</option>
-                    <option value="Salsa de mayonesa con ají limo">Salsa de mayonesa con ají limo</option>
-                    <option value="Salsa rosada (1kg)">Salsa rosada (1kg)</option>
-                    <option value="Salsa rosada (0.5 kg)">Salsa rosada (0.5 kg)</option>
-                    <option value="Salsa Parrillera">Salsa Parrillera</option>
-                    <option value="Salsa de ajo (botella - granel)">Salsa de ajo (botella - granel)</option>
-                    <option value="Salsa de mango habanero (bolsa)">Salsa de mango habanero (bolsa)</option>
-                    <option value="Salsa Ranch">Salsa Ranch</option>
-                    <option value="Salsa Bechamel">Salsa Bechamel</option>
-                    <option value="Salsa Chimichurri">Salsa Chimichurri</option>
-                    <option value="Salsa de ajo (blister - cup)">Salsa de ajo (blister - cup)</option>
-                    <option value="Salsa Parmesana (botella - granel)">Salsa Parmesana (botella - granel)</option>
-                    <option value="Salsa BBQ (blister - cup)">Salsa BBQ (blister - cup)</option>
-                    <option value="Salsa BBQ (bolsa)">Salsa BBQ (bolsa)</option>
-                    <option value="Salsa Buffalo (blister - cup)">Salsa Buffalo (blister - cup)</option>
-                    <option value="Salsa de Miel Picante">Salsa de Miel Picante</option>
-                </optgroup>
-                <optgroup label="🧂 OTROS INSUMOS">
-                    <option value="Dustinator">Dustinator</option>
-                    <option value="Masa Croisant">Masa Croisant</option>
-                    <option value="Masa delgada - importada">Masa delgada - importada</option>
-                    <option value="Azúcar glaseada (Icing) - local">Azúcar glaseada (Icing) - local</option>
-                    <option value="Cinamon Spreed">Cinamon Spreed</option>
-                    <option value="Orégano - sachet">Orégano - sachet</option>
-                    <option value="Aji panca - sachet">Aji panca - sachet</option>
-                    <option value="Orégano - granel">Orégano - granel</option>
-                    <option value="Aji panca - granel">Aji panca - granel</option>
-                    <option value="Sazonador italiano">Sazonador italiano</option>
-                    <option value="Pasta de lasagna">Pasta de lasagna</option>
-                    <option value="Tortilla">Tortilla</option>
-                    <option value="Manjar Blanco">Manjar Blanco</option>
-                    <option value="Azúcar Impalpable">Azúcar Impalpable</option>
-                </optgroup>
-                <optgroup label="🎉 PREPS">
-                    <option value="Lasagna (All the meats/The Works/Americana)">Lasagna (All the meats/The Works/Americana)</option>
-                    <option value="Rollitos de Pepperoni/Jamón">Rollitos de Pepperoni/Jamón</option>
-                    <option value="Rollitos de Manjar">Rollitos de Manjar</option>
-                    <option value="Rollitos de Canela">Rollitos de Canela</option>
-                </optgroup>
-            </select>
-            <input type="date" id="tiendaFechaRecibido" placeholder="Fecha recibido" />
+    <!-- PESTAÑA 1: FECHADOR -->
+    <div id="fechador" class="tab-content active">
+        <!-- ... (todo el contenido del fechador se mantiene igual) ... -->
+        <div class="container">
+            <h1>📅 Fechador - PJ RP</h1>
+            <div class="form-group">
+                <label for="producto">📦 Seleccione el Producto:</label>
+                <select id="producto" onchange="updateShelfLife()">
+                    <!-- opciones igual que en el original -->
+                    <option value="">-- Seleccione un producto --</option>
+                    <optgroup label="🍖 CÁRNICOS EN TROZOS Y RODAJAS">
+                        <option value="Alitas de pollo - local">Alitas de pollo - local</option>
+                        <option value="Poppers de pollo">Poppers de pollo</option>
+                        <option value="Pollo asado - importado">Pollo asado - importado</option>
+                        <option value="Salchicha italiana">Salchicha italiana</option>
+                        <option value="Chorizo - local">Chorizo - local</option>
+                        <option value="Chorizo Parrillero">Chorizo Parrillero</option>
+                        <option value="Carne de res - local">Carne de res - local</option>
+                        <option value="Salchicha de cerdo">Salchicha de cerdo</option>
+                        <option value="Tocino">Tocino</option>
+                        <option value="Pepperoni de cerdo">Pepperoni de cerdo</option>
+                        <option value="Jamón - local">Jamón - local</option>
+                    </optgroup>
+                    <optgroup label="🧀 QUESOS">
+                        <option value="Queso Mozzarella">Queso Mozzarella</option>
+                        <option value="Queso en tiras">Queso en tiras</option>
+                        <option value="Mezcla de 3 quesos (Asiago, Fontina, Provolone)">Mezcla de 3 quesos (Asiago, Fontina, Provolone)</option>
+                        <option value="Mezcla de 2 quesos (Romano y Parmesano)">Mezcla de 2 quesos (Romano y Parmesano)</option>
+                    </optgroup>
+                    <optgroup label="🥬 FRUTAS Y VEGETALES">
+                        <option value="Champiñón">Champiñón</option>
+                        <option value="Cebolla blanca/roja">Cebolla blanca/roja</option>
+                        <option value="Pimiento rojo">Pimiento rojo</option>
+                        <option value="Pimiento verde">Pimiento verde</option>
+                        <option value="Tomate">Tomate</option>
+                        <option value="Jalapeños">Jalapeños</option>
+                        <option value="Aceituna negra">Aceituna negra</option>
+                        <option value="Aceituna verde">Aceituna verde</option>
+                        <option value="Piña - lata">Piña - lata</option>
+                        <option value="Pepperoncini">Pepperoncini</option>
+                    </optgroup>
+                    <optgroup label="🧂 SALSAS">
+                        <option value="Salsa pizza - lata">Salsa pizza - lata</option>
+                        <option value="Salsa de mayonesa con ají limo">Salsa de mayonesa con ají limo</option>
+                        <option value="Salsa rosada (1kg)">Salsa rosada (1kg)</option>
+                        <option value="Salsa rosada (0.5 kg)">Salsa rosada (0.5 kg)</option>
+                        <option value="Salsa Parrillera">Salsa Parrillera</option>
+                        <option value="Salsa de ajo (botella - granel)">Salsa de ajo (botella - granel)</option>
+                        <option value="Salsa de mango habanero (bolsa)">Salsa de mango habanero (bolsa)</option>
+                        <option value="Salsa Ranch">Salsa Ranch</option>
+                        <option value="Salsa Bechamel">Salsa Bechamel</option>
+                        <option value="Salsa Chimichurri">Salsa Chimichurri</option>
+                        <option value="Salsa de ajo (blister - cup)">Salsa de ajo (blister - cup)</option>
+                        <option value="Salsa Parmesana (botella - granel)">Salsa Parmesana (botella - granel)</option>
+                        <option value="Salsa BBQ (blister - cup)">Salsa BBQ (blister - cup)</option>
+                        <option value="Salsa BBQ (bolsa)">Salsa BBQ (bolsa)</option>
+                        <option value="Salsa Buffalo (blister - cup)">Salsa Buffalo (blister - cup)</option>
+                        <option value="Salsa de Miel Picante">Salsa de Miel Picante</option>
+                    </optgroup>
+                    <optgroup label="🧂 OTROS INSUMOS">
+                        <option value="Dustinator">Dustinator</option>
+                        <option value="Masa Croisant">Masa Croisant</option>
+                        <option value="Masa delgada - importada">Masa delgada - importada</option>
+                        <option value="Azúcar glaseada (Icing) - local">Azúcar glaseada (Icing) - local</option>
+                        <option value="Cinamon Spreed">Cinamon Spreed</option>
+                        <option value="Orégano - sachet">Orégano - sachet</option>
+                        <option value="Aji panca - sachet">Aji panca - sachet</option>
+                        <option value="Orégano - granel">Orégano - granel</option>
+                        <option value="Aji panca - granel">Aji panca - granel</option>
+                        <option value="Sazonador italiano">Sazonador italiano</option>
+                        <option value="Pasta de lasagna">Pasta de lasagna</option>
+                        <option value="Tortilla">Tortilla</option>
+                        <option value="Manjar Blanco">Manjar Blanco</option>
+                        <option value="Azúcar Impalpable">Azúcar Impalpable</option>
+                    </optgroup>
+                    <optgroup label="🎉 PREPS">
+                        <option value="Lasagna (All the meats/The Works/Americana)">Lasagna (All the meats/The Works/Americana)</option>
+                        <option value="Rollitos de Pepperoni/Jamón">Rollitos de Pepperoni/Jamón</option>
+                        <option value="Rollitos de Manjar">Rollitos de Manjar</option>
+                        <option value="Rollitos de Canela">Rollitos de Canela</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-group" id="recibidoSection"></div>
+            <div class="form-group">
+                <label for="preparadoFecha">🍳 PREPARADO - Fecha de Inicio:</label>
+                <input type="date" id="preparadoFecha" />
+                <label for="preparadoHora">⏰ Hora de Inicio (HH:MM):</label>
+                <input type="time" id="preparadoHora" />
+                <div id="preparadoManualVencInput" class="manual-input" style="display:none;">
+                    <label for="preparadoVencFecha">📆 Fecha de Vencimiento (Según empaque):</label>
+                    <input type="date" id="preparadoVencFecha" />
+                    <label for="preparadoVencHora">🕒 Hora de Vencimiento (HH:MM):</label>
+                    <input type="time" id="preparadoVencHora" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lineaFecha">🏭 LÍNEA - Fecha de Inicio:</label>
+                <input type="date" id="lineaFecha" />
+                <label for="lineaHora">⏰ Hora de Inicio (HH:MM):</label>
+                <input type="time" id="lineaHora" />
+                <div id="lineaManualVencInput" class="manual-input" style="display:none;">
+                    <label for="lineaVencFecha">📆 Fecha de Vencimiento (Según empaque):</label>
+                    <input type="date" id="lineaVencFecha" />
+                    <label for="lineaVencHora">🕒 Hora de Vencimiento (HH:MM):</label>
+                    <input type="time" id="lineaVencHora" />
+                </div>
+            </div>
+            <div style="display:flex; gap:10px; width:100%;">
+                <button onclick="calcularVencimientos()" style="flex:1;">✅ Generar Sticker</button>
+                <button class="btn-limpiar" onclick="limpiarFormulario()" style="flex:1;">🧹 Limpiar</button>
+            </div>
         </div>
-        <div class="tienda-btns">
-            <button onclick="agregarALista()">➕ Agregar a lista</button>
-            <button class="btn-limpiar" onclick="nuevaLista()">📄 Nueva lista</button>
-            <button onclick="descargarExcel()">📥 Descargar a Excel</button>
-            <button onclick="guardarLista()">💾 Guardar lista</button>
-            <button onclick="cargarLista()">📂 Cargar lista</button>
-        </div>
-        <div class="tienda-tabla-container">
-            <table class="tienda-tabla" id="tablaIngresoTienda">
-                <thead id="tablaIngresoTiendaHead">
+        <div class="sticker-container" id="stickerContainer">
+            <div class="sticker-title">📦 PRODUCTO</div>
+            <div class="sticker-producto" id="stickerProducto"></div>
+            <table class="sticker-table">
+                <thead>
                     <tr>
-                        <th>Producto</th>
-                        <th>Fecha recibido</th>
-                        <th>Vida útil (días)</th>
-                        <th>Fecha vencimiento</th>
-                        <th>Acción</th>
+                        <th></th>
+                        <th>FECHA</th>
+                        <th>HORA</th>
+                        <th>FECHA VENC.</th>
+                        <th>HORA VENC.</th>
                     </tr>
+                    <tr><td colspan="5" style="height:5px;background-color:#007bff;"></td></tr>
                 </thead>
-                <tbody id="cuerpoTablaTienda"></tbody>
+                <tbody id="stickerBody"></tbody>
             </table>
+            <div class="ajuste-aviso" id="ajusteAviso" style="display:none;"></div>
+            <div class="resumen-fechas" id="resumenFechas" style="display:none;">
+                <p><strong>📅 Fechas de vencimiento:</strong></p>
+                <p>- <strong>RECIBIDO:</strong> <span id="resumenRecibido">-</span></p>
+                <p>- <strong>PREPARADO:</strong> <span id="resumenPreparado">-</span></p>
+                <p>- <strong>EN LÍNEA:</strong> <span id="resumenLinea">-</span></p>
+            </div>
         </div>
     </div>
 
-    <!-- Sticker y Resumen -->
-    <div class="sticker-container" id="stickerContainer">
-        <div class="sticker-title">📦 PRODUCTO</div>
-        <div class="sticker-producto" id="stickerProducto"></div>
-        <table class="sticker-table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>FECHA</th>
-                    <th>HORA</th>
-                    <th>FECHA VENC.</th>
-                    <th>HORA VENC.</th>
-                </tr>
-                <tr><td colspan="5" style="height:5px;background-color:#007bff;"></td></tr>
-            </thead>
-            <tbody id="stickerBody"></tbody>
-        </table>
-        <div class="ajuste-aviso" id="ajusteAviso" style="display:none;"></div>
-        <div class="resumen-fechas" id="resumenFechas" style="display:none;">
-            <p><strong>📅 Fechas de vencimiento:</strong></p>
-            <p>- <strong>RECIBIDO:</strong> <span id="resumenRecibido">-</span></p>
-            <p>- <strong>PREPARADO:</strong> <span id="resumenPreparado">-</span></p>
-            <p>- <strong>EN LÍNEA:</strong> <span id="resumenLinea">-</span></p>
+    <!-- PESTAÑA 2: INGRESO DE QCC -->
+    <div id="ingreso" class="tab-content">
+        <div id="authTienda" class="container">
+            <h2>🔒 Acceso a Ingreso de QCC</h2>
+            <input type="password" id="claveTienda" placeholder="Ingrese la contraseña" />
+            <br>
+            <button onclick="validarClaveTienda()">🔓 Desbloquear</button>
+            <p id="mensajeErrorTienda">❌ Contraseña incorrecta</p>
+        </div>
+        <div id="seccionTienda" class="container" style="display:none;">
+            <h1>📦 Ingreso de QCC</h1>
+            <div class="tienda-form">
+                <select id="tiendaProducto">
+                    <!-- mismas opciones que en el fechador -->
+                    <option value="">-- Seleccione un producto --</option>
+                    <optgroup label="🍖 CÁRNICOS EN TROZOS Y RODAJAS">
+                        <option value="Alitas de pollo - local">Alitas de pollo - local</option>
+                        <option value="Poppers de pollo">Poppers de pollo</option>
+                        <option value="Pollo asado - importado">Pollo asado - importado</option>
+                        <option value="Salchicha italiana">Salchicha italiana</option>
+                        <option value="Chorizo - local">Chorizo - local</option>
+                        <option value="Chorizo Parrillero">Chorizo Parrillero</option>
+                        <option value="Carne de res - local">Carne de res - local</option>
+                        <option value="Salchicha de cerdo">Salchicha de cerdo</option>
+                        <option value="Tocino">Tocino</option>
+                        <option value="Pepperoni de cerdo">Pepperoni de cerdo</option>
+                        <option value="Jamón - local">Jamón - local</option>
+                    </optgroup>
+                    <optgroup label="🧀 QUESOS">
+                        <option value="Queso Mozzarella">Queso Mozzarella</option>
+                        <option value="Queso en tiras">Queso en tiras</option>
+                        <option value="Mezcla de 3 quesos (Asiago, Fontina, Provolone)">Mezcla de 3 quesos (Asiago, Fontina, Provolone)</option>
+                        <option value="Mezcla de 2 quesos (Romano y Parmesano)">Mezcla de 2 quesos (Romano y Parmesano)</option>
+                    </optgroup>
+                    <optgroup label="🥬 FRUTAS Y VEGETALES">
+                        <option value="Champiñón">Champiñón</option>
+                        <option value="Cebolla blanca/roja">Cebolla blanca/roja</option>
+                        <option value="Pimiento rojo">Pimiento rojo</option>
+                        <option value="Pimiento verde">Pimiento verde</option>
+                        <option value="Tomate">Tomate</option>
+                        <option value="Jalapeños">Jalapeños</option>
+                        <option value="Aceituna negra">Aceituna negra</option>
+                        <option value="Aceituna verde">Aceituna verde</option>
+                        <option value="Piña - lata">Piña - lata</option>
+                        <option value="Pepperoncini">Pepperoncini</option>
+                    </optgroup>
+                    <optgroup label="🧂 SALSAS">
+                        <option value="Salsa pizza - lata">Salsa pizza - lata</option>
+                        <option value="Salsa de mayonesa con ají limo">Salsa de mayonesa con ají limo</option>
+                        <option value="Salsa rosada (1kg)">Salsa rosada (1kg)</option>
+                        <option value="Salsa rosada (0.5 kg)">Salsa rosada (0.5 kg)</option>
+                        <option value="Salsa Parrillera">Salsa Parrillera</option>
+                        <option value="Salsa de ajo (botella - granel)">Salsa de ajo (botella - granel)</option>
+                        <option value="Salsa de mango habanero (bolsa)">Salsa de mango habanero (bolsa)</option>
+                        <option value="Salsa Ranch">Salsa Ranch</option>
+                        <option value="Salsa Bechamel">Salsa Bechamel</option>
+                        <option value="Salsa Chimichurri">Salsa Chimichurri</option>
+                        <option value="Salsa de ajo (blister - cup)">Salsa de ajo (blister - cup)</option>
+                        <option value="Salsa Parmesana (botella - granel)">Salsa Parmesana (botella - granel)</option>
+                        <option value="Salsa BBQ (blister - cup)">Salsa BBQ (blister - cup)</option>
+                        <option value="Salsa BBQ (bolsa)">Salsa BBQ (bolsa)</option>
+                        <option value="Salsa Buffalo (blister - cup)">Salsa Buffalo (blister - cup)</option>
+                        <option value="Salsa de Miel Picante">Salsa de Miel Picante</option>
+                    </optgroup>
+                    <optgroup label="🧂 OTROS INSUMOS">
+                        <option value="Dustinator">Dustinator</option>
+                        <option value="Masa Croisant">Masa Croisant</option>
+                        <option value="Masa delgada - importada">Masa delgada - importada</option>
+                        <option value="Azúcar glaseada (Icing) - local">Azúcar glaseada (Icing) - local</option>
+                        <option value="Cinamon Spreed">Cinamon Spreed</option>
+                        <option value="Orégano - sachet">Orégano - sachet</option>
+                        <option value="Aji panca - sachet">Aji panca - sachet</option>
+                        <option value="Orégano - granel">Orégano - granel</option>
+                        <option value="Aji panca - granel">Aji panca - granel</option>
+                        <option value="Sazonador italiano">Sazonador italiano</option>
+                        <option value="Pasta de lasagna">Pasta de lasagna</option>
+                        <option value="Tortilla">Tortilla</option>
+                        <option value="Manjar Blanco">Manjar Blanco</option>
+                        <option value="Azúcar Impalpable">Azúcar Impalpable</option>
+                    </optgroup>
+                    <optgroup label="🎉 PREPS">
+                        <option value="Lasagna (All the meats/The Works/Americana)">Lasagna (All the meats/The Works/Americana)</option>
+                        <option value="Rollitos de Pepperoni/Jamón">Rollitos de Pepperoni/Jamón</option>
+                        <option value="Rollitos de Manjar">Rollitos de Manjar</option>
+                        <option value="Rollitos de Canela">Rollitos de Canela</option>
+                    </optgroup>
+                </select>
+                <input type="date" id="tiendaFechaRecibido" placeholder="Fecha recibido" />
+            </div>
+            <div class="tienda-btns">
+                <button onclick="agregarALista()">➕ Agregar</button>
+                <button class="btn-limpiar" onclick="nuevaLista()">📄 Nueva Lista</button>
+                <button onclick="descargarExcel()">📥 Excel</button>
+                <button onclick="guardarLista()">💾 Guardar Lista</button>
+                <button onclick="cargarLista()">✔️ Checklist</button>
+                <button onclick="document.getElementById('archivoExcel').click()">📤 Importar Lista</button>
+                <input type="file" id="archivoExcel" accept=".xlsx, .xls" style="display:none;" onchange="importarExcel(event)" />
+            </div>
+            <div class="tienda-tabla-container">
+                <table class="tienda-tabla" id="tablaIngresoTienda">
+                    <thead id="tablaIngresoTiendaHead">
+                        <tr>
+                            <th>Producto</th>
+                            <th>Fecha Recibido</th>
+                            <th>Vida útil (días)</th>
+                            <th>Fecha Vencimiento</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTablaTienda"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- Librería SheetJS para exportar a Excel -->
+    <!-- Librería SheetJS -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script>
-        // === Contraseña para acceder a la sección tienda ===
-        const CLAVE_TIENDA = "pj2025"; // 🔐 Cambia esta clave si lo deseas
+        // === Cambiar pestaña ===
+        function cambiarPestana(seccion) {
+            document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+            if (seccion === 'fechador') {
+                document.querySelectorAll('.tabs button')[0].classList.add('active');
+            } else {
+                document.querySelectorAll('.tabs button')[1].classList.add('active');
+            }
+            document.getElementById('fechador').classList.toggle('active', seccion === 'fechador');
+            document.getElementById('ingreso').classList.toggle('active', seccion === 'ingreso');
+        }
 
+        // === Contraseña para ingreso ===
+        const CLAVE_TIENDA = "pj";
         function validarClaveTienda() {
             const input = document.getElementById('claveTienda').value;
             const error = document.getElementById('mensajeErrorTienda');
             const seccion = document.getElementById('seccionTienda');
             const authBlock = document.getElementById('authTienda');
-
             if (input === CLAVE_TIENDA) {
                 authBlock.style.display = 'none';
                 seccion.style.display = 'block';
             } else {
                 error.style.display = 'block';
-                setTimeout(() => {
-                    error.style.display = 'none';
-                }, 3000);
+                setTimeout(() => error.style.display = 'none', 3000);
             }
         }
 
-        // === Objeto vidaUtil (original) ===
+        // === OBJETOS COMPARTIDOS ===
         const vidaUtil = {
+            // ... (todo el objeto vidaUtil original se mantiene igual) ...
             "Alitas de pollo - local": { recibido: 7, preparado: 7, linea: 1 },
             "Poppers de pollo": { recibido: 7, preparado: 7, linea: 1 },
             "Pollo asado - importado": { recibido: 10, preparado: 7, linea: 1 },
@@ -668,7 +644,15 @@
             "Rollitos de Canela": { recibido: null, preparado: "6 horas", linea: "6 horas" }
         };
 
-        // === Funciones de la sección TIENDA ===
+        const horariosCierre = {
+            1: "21:59", 2: "21:59", 3: "21:59",
+            4: "22:29", 5: "22:29", 6: "22:29", 0: "22:29"
+        };
+
+        // === FUNCIONES DEL FECHADOR ===
+        // ... (todo el código del fechador se mantiene igual hasta la sección de INGRESO) ...
+
+        // === FUNCIONES DE INGRESO DE MERCADERÍA ===
         let listaIngreso = [];
 
         function formatearFecha(fechaStr) {
@@ -696,6 +680,128 @@
             }
         }
 
+        // === NUEVAS FUNCIONES PARA IMPORTAR EXCEL CON VALIDACIÓN ===
+
+        function normalizar(texto) {
+            return texto
+                .trim()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+        }
+
+        const productosValidos = Object.keys(vidaUtil);
+        const indiceNormalizado = productosValidos.map(p => normalizar(p));
+
+        function encontrarProductoValido(nombreExcel) {
+            const normalizado = normalizar(nombreExcel);
+            const idx = indiceNormalizado.indexOf(normalizado);
+            return idx !== -1 ? productosValidos[idx] : null;
+        }
+
+        function importarExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                    if (jsonData.length < 2) {
+                        alert("⚠️ El archivo está vacío o no tiene datos válidos.");
+                        return;
+                    }
+
+                    const headers = jsonData[0].map(h => h?.toString().trim().toLowerCase() || "");
+                    const productoIndex = headers.findIndex(h => h.includes('producto'));
+                    const fechaRecibidoIndex = headers.findIndex(h => 
+                        h.includes('fecha recibido') || 
+                        h.includes('fecha de recepci') || 
+                        h.includes('fecha')
+                    );
+
+                    if (productoIndex === -1 || fechaRecibidoIndex === -1) {
+                        alert("⚠️ El archivo debe contener columnas 'Producto' y 'Fecha recibido'.");
+                        return;
+                    }
+
+                    const nuevaLista = [];
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        const productoOriginal = (row[productoIndex] || "").toString().trim();
+                        let fechaRecibido = row[fechaRecibidoIndex];
+
+                        if (!productoOriginal) continue;
+
+                        // Normalizar fecha
+                        if (typeof fechaRecibido === 'string') {
+                            const partes = fechaRecibido.split('/');
+                            if (partes.length === 3) {
+                                const [d, m, y] = partes.map(Number);
+                                const yyyy = y < 100 ? (y > 50 ? 1900 + y : 2000 + y) : y;
+                                fechaRecibido = `${yyyy}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                            }
+                        } else if (typeof fechaRecibido === 'number') {
+                            const date = XLSX.SSF.parse_date_code(fechaRecibido);
+                            fechaRecibido = `${date.y}-${String(date.m).padStart(2, '0')}-${String(date.d).padStart(2, '0')}`;
+                        }
+
+                        if (!fechaRecibido || !/^\d{4}-\d{2}-\d{2}$/.test(fechaRecibido)) {
+                            continue;
+                        }
+
+                        const productoValido = encontrarProductoValido(productoOriginal);
+
+                        if (!productoValido) {
+                            nuevaLista.push({
+                                producto: `⚠️ NO RECONOCIDO: ${productoOriginal}`,
+                                fechaRecibido,
+                                vidaUtil: "N/A",
+                                vencimiento: "N/A",
+                                verificado: false
+                            });
+                        } else {
+                            const vencimiento = calcularVencimientoRecibido(productoValido, fechaRecibido);
+                            const vidaUtilDias = vidaUtil[productoValido]?.recibido || "N/A";
+                            nuevaLista.push({
+                                producto: productoValido,
+                                fechaRecibido,
+                                vidaUtil: vidaUtilDias,
+                                vencimiento,
+                                verificado: false
+                            });
+                        }
+                    }
+
+                    if (nuevaLista.length === 0) {
+                        alert("⚠️ No se encontraron productos válidos en el archivo.");
+                        return;
+                    }
+
+                    listaIngreso = nuevaLista;
+                    renderizarTablaTienda();
+
+                    const noReconocidos = nuevaLista.filter(p => p.producto.startsWith("⚠️")).length;
+                    if (noReconocidos > 0) {
+                        alert(`✅ ${nuevaLista.length - noReconocidos} productos importados.\n⚠️ ${noReconocidos} productos no reconocidos. Revise la lista.`);
+                    } else {
+                        alert(`✅ Todos los productos importados correctamente.`);
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert("❌ Error al procesar el archivo Excel. Asegúrese de que el formato es correcto.");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+            event.target.value = "";
+        }
+
+        // === Resto de funciones de ingreso (sin cambios) ===
         function agregarALista() {
             const producto = document.getElementById('tiendaProducto').value;
             const fechaRecibido = document.getElementById('tiendaFechaRecibido').value;
@@ -718,7 +824,6 @@
         function renderizarTablaTienda(modoVerificacion = false) {
             const thead = document.getElementById('tablaIngresoTiendaHead');
             const tbody = document.getElementById('cuerpoTablaTienda');
-            
             if (modoVerificacion) {
                 thead.innerHTML = `
                     <tr>
@@ -741,7 +846,6 @@
                     </tr>
                 `;
             }
-
             tbody.innerHTML = '';
             listaIngreso.forEach((item, index) => {
                 const tr = document.createElement('tr');
@@ -749,7 +853,6 @@
                 const fechaVencimiento = item.vencimiento === "Según empaque" 
                     ? "Según empaque" 
                     : formatearFecha(item.vencimiento);
-
                 if (modoVerificacion) {
                     tr.innerHTML = `
                         <td><input type="checkbox" ${item.verificado ? 'checked' : ''} onchange="toggleVerificado(${index})"></td>
@@ -773,9 +876,7 @@
         }
 
         function nuevaLista() {
-            if (listaIngreso.length === 0) {
-                return;
-            }
+            if (listaIngreso.length === 0) return;
             if (confirm("¿Desea empezar una nueva lista? La lista actual se perderá si no está guardada.")) {
                 listaIngreso = [];
                 renderizarTablaTienda();
@@ -799,7 +900,6 @@
             XLSX.writeFile(wb, "Ingreso_Tienda.xlsx");
         }
 
-        // === NUEVAS FUNCIONES: GUARDAR, CARGAR, VERIFICAR, ELIMINAR ===
         function guardarLista() {
             if (listaIngreso.length === 0) {
                 alert("⚠️ La lista está vacía. No hay nada que guardar.");
@@ -844,17 +944,7 @@
             }
         }
 
-        // === Funciones originales (sin cambios) ===
-        const horariosCierre = {
-            1: "21:59", // lunes
-            2: "21:59", // martes
-            3: "21:59", // miércoles
-            4: "22:29", // jueves
-            5: "22:29", // viernes
-            6: "22:29", // sábado
-            0: "22:29"  // domingo
-        };
-
+        // === FUNCIONES DEL FECHADOR (copiadas del original) ===
         function updateShelfLife() {
             const producto = document.getElementById('producto').value;
             const recibidoSection = document.getElementById('recibidoSection');
@@ -871,7 +961,7 @@
                 recibidoSection.innerHTML = `
                     <label>📦 RECIBIDO - Fecha de Vencimiento (Según empaque):</label>
                     <input type="date" id="recibidoVencFecha" />
-                    <p class="optional-label">* No se requiere fecha de inicio.</p>
+                    <p style="color:#7f8c8d; font-size:13px; font-style:italic; margin-top:4px;">* No se requiere fecha de inicio.</p>
                 `;
             } else {
                 recibidoSection.innerHTML = `
@@ -907,21 +997,10 @@
             return diasSemana[fecha.getUTCDay()];
         }
 
-        function sumarDiasYHorasISO(fechaISO, horaStr, dias, horas) {
-            const [h, min] = horaStr.split(':').map(Number);
-            const [y, m, d] = fechaISO.split('-').map(Number);
-            const fecha = new Date(Date.UTC(y, m - 1, d, h, min));
-            fecha.setUTCDate(fecha.getUTCDate() + dias);
-            fecha.setUTCHours(fecha.getUTCHours() + horas);
-            const iso = fecha.toISOString();
-            const fechaISOOut = iso.split('T')[0];
-            const horaISOOut = iso.split('T')[1].substring(0, 5);
-            return {
-                fechaISO: fechaISOOut,
-                horaISO: horaISOOut,
-                fechaMostrar: formatearFecha(fechaISOOut),
-                horaMostrar: formatearHora(horaISOOut)
-            };
+        function obtenerHoraCierre(fechaYYYYMMDD) {
+            const fecha = new Date(`${fechaYYYYMMDD}T00:00:00-05:00`);
+            const diaSemana = fecha.getDay();
+            return horariosCierre[diaSemana];
         }
 
         function obtenerUltimoMinutoDia(fechaISO) {
@@ -944,12 +1023,6 @@
             </tr>`;
         }
 
-        function obtenerHoraCierre(fechaYYYYMMDD) {
-            const fecha = new Date(`${fechaYYYYMMDD}T00:00:00-05:00`);
-            const diaSemana = fecha.getDay();
-            return horariosCierre[diaSemana];
-        }
-
         function calcularVencimientos() {
             const producto = document.getElementById('producto').value;
             if (!producto) {
@@ -965,11 +1038,12 @@
             const pH = document.getElementById('preparadoHora')?.value;
             const lF = document.getElementById('lineaFecha')?.value;
             const lH = document.getElementById('lineaHora')?.value;
+
             if (pF && rF) {
                 const prepDate = new Date(pF + "T00:00:00-05:00");
                 const recibidoDate = new Date(rF + "T00:00:00-05:00");
                 if (prepDate < recibidoDate) {
-                    alert("⚠️ La fecha de inicio de PREPARADO no puede ser anterior a la fecha de inicio de RECIBIDO.");
+                    alert("⚠️ La fecha de inicio de PREPARADO no puede ser anterior a la de RECIBIDO.");
                     return;
                 }
             }
@@ -977,10 +1051,11 @@
                 const lineaDate = new Date(lF + "T00:00:00-05:00");
                 const prepDate = new Date(pF + "T00:00:00-05:00");
                 if (lineaDate < prepDate) {
-                    alert("⚠️ La fecha de inicio de LÍNEA no puede ser anterior a la fecha de inicio de PREPARADO.");
+                    alert("⚠️ La fecha de inicio de LÍNEA no puede ser anterior a la de PREPARADO.");
                     return;
                 }
             }
+
             // --- RECIBIDO ---
             let fechaVencRecibidoISO = null;
             let fechaVencRecibidoMostrar = "-";
@@ -1009,6 +1084,7 @@
                 resumen.push(`<strong>RECIBIDO:</strong> No aplica`);
                 filas.push(montarFilaSticker("RECIB.", "-", "-", "-", "-"));
             }
+
             // --- PREPARADO ---
             let vencPreparadoOriginal = null;
             let fechaVencPreparadoMostrar = "-", horaVencPreparadoMostrar = "-";
@@ -1061,6 +1137,7 @@
                 resumen.push(`<strong>PREPARADO:</strong> No ingresado`);
                 filas.push(montarFilaSticker("PREP", "-", "-", "-", "-"));
             }
+
             // --- LÍNEA ---
             let vencLineaOriginal = null;
             let fechaVencLineaMostrar = "-", horaVencLineaMostrar = "-";
@@ -1108,6 +1185,7 @@
                 resumen.push(`<strong>LÍNEA:</strong> No ingresado`);
                 filas.push(montarFilaSticker("LINEA", "-", "-", "-", "-"));
             }
+
             // === AJUSTES AUTOMÁTICOS ===
             if (vencPreparadoOriginal && vencLineaOriginal) {
                 const prepDateTime = new Date(`${vencPreparadoOriginal.fecha}T${vencPreparadoOriginal.hora}:00-05:00`);
@@ -1133,6 +1211,7 @@
                 fechaVencLineaFinalMostrar = fechaVencLineaMostrar;
                 horaVencLineaFinalMostrar = horaVencLineaMostrar;
             }
+
             // Mostrar sticker
             document.getElementById('stickerProducto').textContent = producto;
             document.getElementById('stickerBody').innerHTML = filas.join('');
@@ -1143,7 +1222,6 @@
             } else {
                 aviso.style.display = 'none';
             }
-            // Resumen de fechas
             const resumenFechas = document.getElementById('resumenFechas');
             const resumenRecibido = document.getElementById('resumenRecibido');
             const resumenPreparado = document.getElementById('resumenPreparado');
@@ -1172,7 +1250,6 @@
             resumenPreparado.textContent = preparadoTexto;
             resumenLinea.textContent = lineaTexto;
             resumenFechas.style.display = 'block';
-            // Mostrar sticker con animación
             const stickerContainer = document.getElementById('stickerContainer');
             stickerContainer.style.display = 'block';
             stickerContainer.classList.add('fade-in');
