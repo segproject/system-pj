@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>📅 SYSTEM - PJ RP</title>
+    <title>📅 Fechador - PJ RP</title>
     <style>
-        /* ... (todo el CSS original se mantiene igual) ... */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background-color: #f9f9fa;
-            color: #333;
+            background-color: #f8f9fa;
+            color: #222;
             line-height: 1.6;
             padding: 10px;
             display: flex;
@@ -28,15 +27,15 @@
             padding: 12px 24px;
             font-size: 18px;
             font-weight: bold;
-            background-color: #ecf0f1;
-            color: #2c3e50;
+            background-color: #e9ecef;
+            color: #212529;
             border: none;
             border-radius: 10px 10px 0 0;
             cursor: pointer;
             transition: all 0.2s;
         }
         .tabs button.active {
-            background-color: #3498db;
+            background-color: #008000;
             color: white;
         }
         .tab-content {
@@ -54,13 +53,17 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             margin-bottom: 20px;
             transition: all 0.3s ease;
+            border: 1px solid #eee;
         }
-        h1 {
+        h1, h2 {
             text-align: center;
-            color: #2c3e50;
+            color: #008000;
             font-size: 28px;
             margin-bottom: 10px;
             font-weight: 600;
+        }
+        h2 {
+            font-size: 24px;
         }
         .form-group {
             margin-bottom: 18px;
@@ -69,14 +72,14 @@
             display: block;
             margin-bottom: 6px;
             font-weight: 600;
-            color: #2c3e50;
+            color: #212529;
             font-size: 15px;
         }
         select, input, button {
             width: 100%;
             padding: 12px;
             margin-bottom: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #ccc;
             border-radius: 8px;
             font-size: 16px;
             box-sizing: border-box;
@@ -84,11 +87,11 @@
         }
         input:focus, select:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            border-color: #008000;
+            box-shadow: 0 0 0 2px rgba(0, 128, 0, 0.2);
         }
         button {
-            background-color: #3498db;
+            background-color: #008000;
             color: white;
             border: none;
             cursor: pointer;
@@ -103,17 +106,20 @@
             gap: 8px;
         }
         button:hover {
-            background-color: #2980b9;
+            background-color: #006400;
             transform: translateY(-1px);
         }
-        .btn-limpiar {
-            background-color: #e74c3c;
+        .btn-limpiar,
+        .btn-nueva-lista {
+            background-color: #6c757d;
+            color: white;
         }
-        .btn-limpiar:hover {
-            background-color: #c0392b;
+        .btn-limpiar:hover,
+        .btn-nueva-lista:hover {
+            background-color: #5a6268;
         }
         .btn-eliminar {
-            background-color: #e74c3c;
+            background-color: #D2232A;
             color: white;
             border: none;
             border-radius: 5px;
@@ -122,7 +128,7 @@
             font-size: 14px;
         }
         .btn-eliminar:hover {
-            background-color: #c0392b;
+            background-color: #b01e23;
             transform: scale(1.05);
         }
         .tienda-form {
@@ -164,7 +170,7 @@
             border-bottom: 1px solid #ddd;
         }
         .tienda-tabla th {
-            background-color: #3498db;
+            background-color: #008000;
             color: white;
             font-weight: bold;
         }
@@ -174,7 +180,7 @@
             margin: 20px auto;
             padding: 20px;
             background: white;
-            border: 2px solid #007bff;
+            border: 2px solid #008000;
             border-radius: 15px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.1);
             display: none;
@@ -184,10 +190,10 @@
             text-align: center;
             font-size: 24px;
             font-weight: bold;
-            color: #007bff;
+            color: #008000;
             margin-bottom: 10px;
             padding-bottom: 5px;
-            border-bottom: 2px solid #007bff;
+            border-bottom: 2px solid #008000;
             letter-spacing: 0.5px;
         }
         .sticker-producto {
@@ -196,9 +202,9 @@
             text-align: center;
             margin-bottom: 15px;
             padding: 12px;
-            background-color: #e9f7fe;
+            background-color: #f0f8f0;
             border-radius: 8px;
-            border: 1px solid #cce5ff;
+            border: 1px solid #d4edda;
         }
         .sticker-table {
             width: 100%;
@@ -207,37 +213,38 @@
             font-size: 14px;
         }
         .sticker-table th, .sticker-table td {
-            border: 1px solid #007bff;
+            border: 1px solid #008000;
             padding: 10px;
             text-align: center;
         }
         .sticker-table th {
-            background-color: #cce5ff;
+            background-color: #d4edda;
             font-weight: bold;
             font-size: 15px;
+            color: #222;
         }
         .sticker-table .label {
             font-weight: bold;
-            background-color: #e9f7fe;
+            background-color: #f0f8f0;
             width: 80px;
         }
         .sticker-table .time-col { width: 80px; }
         .resumen-fechas {
-            background: #eaf2f8;
+            background: #f0f8f0;
             padding: 15px;
-            border-left: 4px solid #007bff;
+            border-left: 4px solid #008000;
             border-radius: 8px;
             margin-top: 15px;
             font-size: 15px;
             line-height: 1.7;
-            color: #2c3e50;
+            color: #222;
         }
         .resumen-fechas p {
             margin: 0;
             padding: 0;
         }
         .resumen-fechas strong {
-            color: #007bff;
+            color: #008000;
         }
         .ajuste-aviso {
             background-color: #fff3cd;
@@ -259,9 +266,11 @@
             width: 80%;
             max-width: 300px;
             margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
         }
         #mensajeErrorTienda {
-            color: red;
+            color: #D2232A;
             margin-top: 10px;
             display: none;
         }
@@ -297,13 +306,11 @@
 
     <!-- PESTAÑA 1: FECHADOR -->
     <div id="fechador" class="tab-content active">
-        <!-- ... (todo el contenido del fechador se mantiene igual) ... -->
         <div class="container">
             <h1>📅 Fechador - PJ RP</h1>
             <div class="form-group">
                 <label for="producto">📦 Seleccione el Producto:</label>
                 <select id="producto" onchange="updateShelfLife()">
-                    <!-- opciones igual que en el original -->
                     <option value="">-- Seleccione un producto --</option>
                     <optgroup label="🍖 CÁRNICOS EN TROZOS Y RODAJAS">
                         <option value="Alitas de pollo - local">Alitas de pollo - local</option>
@@ -420,7 +427,7 @@
                         <th>FECHA VENC.</th>
                         <th>HORA VENC.</th>
                     </tr>
-                    <tr><td colspan="5" style="height:5px;background-color:#007bff;"></td></tr>
+                    <tr><td colspan="5" style="height:5px;background-color:#008000;"></td></tr>
                 </thead>
                 <tbody id="stickerBody"></tbody>
             </table>
@@ -447,7 +454,6 @@
             <h1>📦 Ingreso de QCC</h1>
             <div class="tienda-form">
                 <select id="tiendaProducto">
-                    <!-- mismas opciones que en el fechador -->
                     <option value="">-- Seleccione un producto --</option>
                     <optgroup label="🍖 CÁRNICOS EN TROZOS Y RODAJAS">
                         <option value="Alitas de pollo - local">Alitas de pollo - local</option>
@@ -526,7 +532,7 @@
             <div class="tienda-btns">
                 <button onclick="agregarALista()">➕ Agregar</button>
                 <button class="btn-limpiar" onclick="nuevaLista()">📄 Nueva Lista</button>
-                <button onclick="descargarExcel()">📥 Descargar Lista</button>
+                <button onclick="descargarExcel()">📥 Excel</button>
                 <button onclick="guardarLista()">💾 Guardar Lista</button>
                 <button onclick="cargarLista()">✔️ Checklist</button>
                 <button onclick="document.getElementById('archivoExcel').click()">📤 Importar Lista</button>
@@ -582,7 +588,6 @@
 
         // === OBJETOS COMPARTIDOS ===
         const vidaUtil = {
-            // ... (todo el objeto vidaUtil original se mantiene igual) ...
             "Alitas de pollo - local": { recibido: 7, preparado: 7, linea: 1 },
             "Poppers de pollo": { recibido: 7, preparado: 7, linea: 1 },
             "Pollo asado - importado": { recibido: 10, preparado: 7, linea: 1 },
@@ -649,12 +654,7 @@
             4: "22:29", 5: "22:29", 6: "22:29", 0: "22:29"
         };
 
-        // === FUNCIONES DEL FECHADOR ===
-        // ... (todo el código del fechador se mantiene igual hasta la sección de INGRESO) ...
-
-        // === FUNCIONES DE INGRESO DE MERCADERÍA ===
-        let listaIngreso = [];
-
+        // === FUNCIONES AUXILIARES ===
         function formatearFecha(fechaStr) {
             if (!fechaStr) return "-";
             const [y, m, d] = fechaStr.split('-');
@@ -668,309 +668,21 @@
             return fecha.toISOString().split('T')[0];
         }
 
-        function calcularVencimientoRecibido(producto, fechaRecibido) {
-            const info = vidaUtil[producto];
-            if (!info || !fechaRecibido) return null;
-            if (info.recibido === "Según empaque") {
-                return "Según empaque";
-            } else if (typeof info.recibido === 'number') {
-                return sumarDiasISO(fechaRecibido, info.recibido);
-            } else {
-                return "N/A";
-            }
-        }
-
-        // === NUEVAS FUNCIONES PARA IMPORTAR EXCEL CON VALIDACIÓN ===
-
-        function normalizar(texto) {
-            return texto
-                .trim()
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "");
-        }
-
-        const productosValidos = Object.keys(vidaUtil);
-        const indiceNormalizado = productosValidos.map(p => normalizar(p));
-
-        function encontrarProductoValido(nombreExcel) {
-            const normalizado = normalizar(nombreExcel);
-            const idx = indiceNormalizado.indexOf(normalizado);
-            return idx !== -1 ? productosValidos[idx] : null;
-        }
-
-        function importarExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-                    if (jsonData.length < 2) {
-                        alert("⚠️ El archivo está vacío o no tiene datos válidos.");
-                        return;
-                    }
-
-                    const headers = jsonData[0].map(h => h?.toString().trim().toLowerCase() || "");
-                    const productoIndex = headers.findIndex(h => h.includes('producto'));
-                    const fechaRecibidoIndex = headers.findIndex(h => 
-                        h.includes('fecha recibido') || 
-                        h.includes('fecha de recepci') || 
-                        h.includes('fecha')
-                    );
-
-                    if (productoIndex === -1 || fechaRecibidoIndex === -1) {
-                        alert("⚠️ El archivo debe contener columnas 'Producto' y 'Fecha recibido'.");
-                        return;
-                    }
-
-                    const nuevaLista = [];
-                    for (let i = 1; i < jsonData.length; i++) {
-                        const row = jsonData[i];
-                        const productoOriginal = (row[productoIndex] || "").toString().trim();
-                        let fechaRecibido = row[fechaRecibidoIndex];
-
-                        if (!productoOriginal) continue;
-
-                        // Normalizar fecha
-                        if (typeof fechaRecibido === 'string') {
-                            const partes = fechaRecibido.split('/');
-                            if (partes.length === 3) {
-                                const [d, m, y] = partes.map(Number);
-                                const yyyy = y < 100 ? (y > 50 ? 1900 + y : 2000 + y) : y;
-                                fechaRecibido = `${yyyy}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                            }
-                        } else if (typeof fechaRecibido === 'number') {
-                            const date = XLSX.SSF.parse_date_code(fechaRecibido);
-                            fechaRecibido = `${date.y}-${String(date.m).padStart(2, '0')}-${String(date.d).padStart(2, '0')}`;
-                        }
-
-                        if (!fechaRecibido || !/^\d{4}-\d{2}-\d{2}$/.test(fechaRecibido)) {
-                            continue;
-                        }
-
-                        const productoValido = encontrarProductoValido(productoOriginal);
-
-                        if (!productoValido) {
-                            nuevaLista.push({
-                                producto: `⚠️ NO RECONOCIDO: ${productoOriginal}`,
-                                fechaRecibido,
-                                vidaUtil: "N/A",
-                                vencimiento: "N/A",
-                                verificado: false
-                            });
-                        } else {
-                            const vencimiento = calcularVencimientoRecibido(productoValido, fechaRecibido);
-                            const vidaUtilDias = vidaUtil[productoValido]?.recibido || "N/A";
-                            nuevaLista.push({
-                                producto: productoValido,
-                                fechaRecibido,
-                                vidaUtil: vidaUtilDias,
-                                vencimiento,
-                                verificado: false
-                            });
-                        }
-                    }
-
-                    if (nuevaLista.length === 0) {
-                        alert("⚠️ No se encontraron productos válidos en el archivo.");
-                        return;
-                    }
-
-                    listaIngreso = nuevaLista;
-                    renderizarTablaTienda();
-
-                    const noReconocidos = nuevaLista.filter(p => p.producto.startsWith("⚠️")).length;
-                    if (noReconocidos > 0) {
-                        alert(`✅ ${nuevaLista.length - noReconocidos} productos importados.\n⚠️ ${noReconocidos} productos no reconocidos. Revise la lista.`);
-                    } else {
-                        alert(`✅ Todos los productos importados correctamente.`);
-                    }
-                } catch (error) {
-                    console.error(error);
-                    alert("❌ Error al procesar el archivo Excel. Asegúrese de que el formato es correcto.");
-                }
+        // ✅ FUNCIÓN FALTANTE: sumarDiasYHorasISO
+        function sumarDiasYHorasISO(fechaISO, horaISO, dias, horas) {
+            const [y, m, d] = fechaISO.split('-').map(Number);
+            const [h, min] = horaISO.split(':').map(Number);
+            const fecha = new Date(Date.UTC(y, m - 1, d, h, min));
+            fecha.setUTCDate(fecha.getUTCDate() + dias);
+            fecha.setUTCHours(fecha.getUTCHours() + horas);
+            const nuevaFechaISO = fecha.toISOString().split('T')[0];
+            const nuevaHoraISO = fecha.toISOString().split('T')[1].substring(0, 5);
+            return {
+                fechaISO: nuevaFechaISO,
+                horaISO: nuevaHoraISO,
+                fechaMostrar: formatearFecha(nuevaFechaISO),
+                horaMostrar: formatearHora(nuevaHoraISO)
             };
-            reader.readAsArrayBuffer(file);
-            event.target.value = "";
-        }
-
-        // === Resto de funciones de ingreso (sin cambios) ===
-        function agregarALista() {
-            const producto = document.getElementById('tiendaProducto').value;
-            const fechaRecibido = document.getElementById('tiendaFechaRecibido').value;
-            if (!producto || !fechaRecibido) {
-                alert("⚠️ Seleccione un producto y una fecha de recepción.");
-                return;
-            }
-            const vencimiento = calcularVencimientoRecibido(producto, fechaRecibido);
-            const vidaUtilDias = vidaUtil[producto]?.recibido || "N/A";
-            listaIngreso.push({
-                producto,
-                fechaRecibido,
-                vidaUtil: vidaUtilDias,
-                vencimiento,
-                verificado: false
-            });
-            renderizarTablaTienda();
-        }
-
-        function renderizarTablaTienda(modoVerificacion = false) {
-            const thead = document.getElementById('tablaIngresoTiendaHead');
-            const tbody = document.getElementById('cuerpoTablaTienda');
-            if (modoVerificacion) {
-                thead.innerHTML = `
-                    <tr>
-                        <th>✔</th>
-                        <th>Producto</th>
-                        <th>Fecha recibido</th>
-                        <th>Vida útil (días)</th>
-                        <th>Fecha vencimiento</th>
-                        <th>Acción</th>
-                    </tr>
-                `;
-            } else {
-                thead.innerHTML = `
-                    <tr>
-                        <th>Producto</th>
-                        <th>Fecha recibido</th>
-                        <th>Vida útil (días)</th>
-                        <th>Fecha vencimiento</th>
-                        <th>Acción</th>
-                    </tr>
-                `;
-            }
-            tbody.innerHTML = '';
-            listaIngreso.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                const fechaRecibido = formatearFecha(item.fechaRecibido);
-                const fechaVencimiento = item.vencimiento === "Según empaque" 
-                    ? "Según empaque" 
-                    : formatearFecha(item.vencimiento);
-                if (modoVerificacion) {
-                    tr.innerHTML = `
-                        <td><input type="checkbox" ${item.verificado ? 'checked' : ''} onchange="toggleVerificado(${index})"></td>
-                        <td>${item.producto}</td>
-                        <td>${fechaRecibido}</td>
-                        <td>${item.vidaUtil}</td>
-                        <td>${fechaVencimiento}</td>
-                        <td><button class="btn-eliminar" onclick="eliminarProducto(${index})">🗑️</button></td>
-                    `;
-                } else {
-                    tr.innerHTML = `
-                        <td>${item.producto}</td>
-                        <td>${fechaRecibido}</td>
-                        <td>${item.vidaUtil}</td>
-                        <td>${fechaVencimiento}</td>
-                        <td><button class="btn-eliminar" onclick="eliminarProducto(${index})">🗑️</button></td>
-                    `;
-                }
-                tbody.appendChild(tr);
-            });
-        }
-
-        function nuevaLista() {
-            if (listaIngreso.length === 0) return;
-            if (confirm("¿Desea empezar una nueva lista? La lista actual se perderá si no está guardada.")) {
-                listaIngreso = [];
-                renderizarTablaTienda();
-            }
-        }
-
-        function descargarExcel() {
-            if (listaIngreso.length === 0) {
-                alert("⚠️ La lista está vacía.");
-                return;
-            }
-            const data = listaIngreso.map(item => ({
-                Producto: item.producto,
-                "Fecha recibido": formatearFecha(item.fechaRecibido),
-                "Vida útil (días)": item.vidaUtil,
-                "Fecha vencimiento": item.vencimiento === "Según empaque" ? "Según empaque" : formatearFecha(item.vencimiento)
-            }));
-            const ws = XLSX.utils.json_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Ingreso_Tienda");
-            XLSX.writeFile(wb, "Ingreso_Tienda.xlsx");
-        }
-
-        function guardarLista() {
-            if (listaIngreso.length === 0) {
-                alert("⚠️ La lista está vacía. No hay nada que guardar.");
-                return;
-            }
-            localStorage.setItem('listaIngresoGuardada', JSON.stringify(listaIngreso));
-            alert("✅ Lista guardada exitosamente.");
-        }
-
-        function cargarLista() {
-            const guardada = localStorage.getItem('listaIngresoGuardada');
-            if (!guardada) {
-                alert("ℹ️ No hay ninguna lista guardada.");
-                return;
-            }
-            try {
-                listaIngreso = JSON.parse(guardada);
-                listaIngreso = listaIngreso.map(item => ({
-                    ...item,
-                    verificado: item.verificado || false
-                }));
-                renderizarTablaTienda(true);
-                alert("✅ Lista cargada. Puede verificar o eliminar productos.");
-            } catch (e) {
-                alert("❌ Error al cargar la lista guardada.");
-            }
-        }
-
-        function toggleVerificado(index) {
-            listaIngreso[index].verificado = !listaIngreso[index].verificado;
-            localStorage.setItem('listaIngresoGuardada', JSON.stringify(listaIngreso));
-        }
-
-        function eliminarProducto(index) {
-            if (confirm("¿Está seguro de que desea eliminar este producto de la lista?")) {
-                listaIngreso.splice(index, 1);
-                const modoVerificacion = document.querySelector('#tablaIngresoTiendaHead th:first-child').textContent.trim() === '✔';
-                renderizarTablaTienda(modoVerificacion);
-                if (localStorage.getItem('listaIngresoGuardada')) {
-                    localStorage.setItem('listaIngresoGuardada', JSON.stringify(listaIngreso));
-                }
-            }
-        }
-
-        // === FUNCIONES DEL FECHADOR (copiadas del original) ===
-        function updateShelfLife() {
-            const producto = document.getElementById('producto').value;
-            const recibidoSection = document.getElementById('recibidoSection');
-            const p = document.getElementById('preparadoManualVencInput');
-            const l = document.getElementById('lineaManualVencInput');
-            if (!producto) {
-                recibidoSection.innerHTML = '';
-                p.style.display = 'none';
-                l.style.display = 'none';
-                return;
-            }
-            const s = vidaUtil[producto];
-            if (s.recibido === "Según empaque") {
-                recibidoSection.innerHTML = `
-                    <label>📦 RECIBIDO - Fecha de Vencimiento (Según empaque):</label>
-                    <input type="date" id="recibidoVencFecha" />
-                    <p style="color:#7f8c8d; font-size:13px; font-style:italic; margin-top:4px;">* No se requiere fecha de inicio.</p>
-                `;
-            } else {
-                recibidoSection.innerHTML = `
-                    <label for="recibidoFecha">📦 RECIBIDO - Fecha de Inicio:</label>
-                    <input type="date" id="recibidoFecha" />
-                `;
-            }
-            p.style.display = (s.preparado === "Según empaque") ? 'block' : 'none';
-            l.style.display = (s.linea === "Según empaque") ? 'block' : 'none';
         }
 
         function formatearHora(horaStr) {
@@ -1021,6 +733,34 @@
                 <td>${fechaVenc}</td>
                 <td class="time-col"><span>${horaVenc}</span></td>
             </tr>`;
+        }
+
+        function updateShelfLife() {
+            const producto = document.getElementById('producto').value;
+            const recibidoSection = document.getElementById('recibidoSection');
+            const p = document.getElementById('preparadoManualVencInput');
+            const l = document.getElementById('lineaManualVencInput');
+            if (!producto) {
+                recibidoSection.innerHTML = '';
+                p.style.display = 'none';
+                l.style.display = 'none';
+                return;
+            }
+            const s = vidaUtil[producto];
+            if (s.recibido === "Según empaque") {
+                recibidoSection.innerHTML = `
+                    <label>📦 RECIBIDO - Fecha de Vencimiento (Según empaque):</label>
+                    <input type="date" id="recibidoVencFecha" />
+                    <p style="color:#7f8c8d; font-size:13px; font-style:italic; margin-top:4px;">* No se requiere fecha de inicio.</p>
+                `;
+            } else {
+                recibidoSection.innerHTML = `
+                    <label for="recibidoFecha">📦 RECIBIDO - Fecha de Inicio:</label>
+                    <input type="date" id="recibidoFecha" />
+                `;
+            }
+            p.style.display = (s.preparado === "Según empaque") ? 'block' : 'none';
+            l.style.display = (s.linea === "Según empaque") ? 'block' : 'none';
         }
 
         function calcularVencimientos() {
@@ -1222,13 +962,16 @@
             } else {
                 aviso.style.display = 'none';
             }
+
             const resumenFechas = document.getElementById('resumenFechas');
             const resumenRecibido = document.getElementById('resumenRecibido');
             const resumenPreparado = document.getElementById('resumenPreparado');
             const resumenLinea = document.getElementById('resumenLinea');
+
             let recibidoTexto = "-";
             let preparadoTexto = "-";
             let lineaTexto = "-";
+
             if (fechaVencRecibidoISO) {
                 const dia = obtenerNombreDia(fechaVencRecibidoISO);
                 const fecha = formatearFecha(fechaVencRecibidoISO);
@@ -1246,10 +989,12 @@
                 const hora = formatearHora(vencLineaFinal.hora);
                 lineaTexto = `${dia} ${fecha} a las ${hora}`;
             }
+
             resumenRecibido.textContent = recibidoTexto;
             resumenPreparado.textContent = preparadoTexto;
             resumenLinea.textContent = lineaTexto;
             resumenFechas.style.display = 'block';
+
             const stickerContainer = document.getElementById('stickerContainer');
             stickerContainer.style.display = 'block';
             stickerContainer.classList.add('fade-in');
@@ -1274,7 +1019,268 @@
             document.getElementById('lineaManualVencInput').style.display = 'none';
             document.getElementById('producto').focus();
         }
+
+        // === FUNCIONES DE INGRESO DE MERCADERÍA ===
+        let listaIngreso = [];
+
+        function calcularVencimientoRecibido(producto, fechaRecibido) {
+            const info = vidaUtil[producto];
+            if (!info || !fechaRecibido) return null;
+            if (info.recibido === "Según empaque") {
+                return "Según empaque";
+            } else if (typeof info.recibido === 'number') {
+                return sumarDiasISO(fechaRecibido, info.recibido);
+            } else {
+                return "N/A";
+            }
+        }
+
+        function normalizar(texto) {
+            return texto
+                .trim()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+        }
+
+        const productosValidos = Object.keys(vidaUtil);
+        const indiceNormalizado = productosValidos.map(p => normalizar(p));
+
+        function encontrarProductoValido(nombreExcel) {
+            const normalizado = normalizar(nombreExcel);
+            const idx = indiceNormalizado.indexOf(normalizado);
+            return idx !== -1 ? productosValidos[idx] : null;
+        }
+
+        function importarExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    if (jsonData.length < 2) {
+                        alert("⚠️ El archivo está vacío o no tiene datos válidos.");
+                        return;
+                    }
+                    const headers = jsonData[0].map(h => h?.toString().trim().toLowerCase() || "");
+                    const productoIndex = headers.findIndex(h => h.includes('producto'));
+                    const fechaRecibidoIndex = headers.findIndex(h => 
+                        h.includes('fecha recibido') || 
+                        h.includes('fecha de recepci') || 
+                        h.includes('fecha')
+                    );
+                    if (productoIndex === -1 || fechaRecibidoIndex === -1) {
+                        alert("⚠️ El archivo debe contener columnas 'Producto' y 'Fecha recibido'.");
+                        return;
+                    }
+                    const nuevaLista = [];
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        const productoOriginal = (row[productoIndex] || "").toString().trim();
+                        let fechaRecibido = row[fechaRecibidoIndex];
+                        if (!productoOriginal) continue;
+                        if (typeof fechaRecibido === 'string') {
+                            const partes = fechaRecibido.split('/');
+                            if (partes.length === 3) {
+                                const [d, m, y] = partes.map(Number);
+                                const yyyy = y < 100 ? (y > 50 ? 1900 + y : 2000 + y) : y;
+                                fechaRecibido = `${yyyy}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                            }
+                        } else if (typeof fechaRecibido === 'number') {
+                            const date = XLSX.SSF.parse_date_code(fechaRecibido);
+                            fechaRecibido = `${date.y}-${String(date.m).padStart(2, '0')}-${String(date.d).padStart(2, '0')}`;
+                        }
+                        if (!fechaRecibido || !/^\d{4}-\d{2}-\d{2}$/.test(fechaRecibido)) {
+                            continue;
+                        }
+                        const productoValido = encontrarProductoValido(productoOriginal);
+                        if (!productoValido) {
+                            nuevaLista.push({
+                                producto: `⚠️ NO RECONOCIDO: ${productoOriginal}`,
+                                fechaRecibido,
+                                vidaUtil: "N/A",
+                                vencimiento: "N/A",
+                                verificado: false
+                            });
+                        } else {
+                            const vencimiento = calcularVencimientoRecibido(productoValido, fechaRecibido);
+                            const vidaUtilDias = vidaUtil[productoValido]?.recibido || "N/A";
+                            nuevaLista.push({
+                                producto: productoValido,
+                                fechaRecibido,
+                                vidaUtil: vidaUtilDias,
+                                vencimiento,
+                                verificado: false
+                            });
+                        }
+                    }
+                    if (nuevaLista.length === 0) {
+                        alert("⚠️ No se encontraron productos válidos en el archivo.");
+                        return;
+                    }
+                    listaIngreso = nuevaLista;
+                    renderizarTablaTienda();
+                    const noReconocidos = nuevaLista.filter(p => p.producto.startsWith("⚠️")).length;
+                    if (noReconocidos > 0) {
+                        alert(`✅ ${nuevaLista.length - noReconocidos} productos importados.\n⚠️ ${noReconocidos} productos no reconocidos. Revise la lista.`);
+                    } else {
+                        alert(`✅ Todos los productos importados correctamente.`);
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert("❌ Error al procesar el archivo Excel. Asegúrese de que el formato es correcto.");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+            event.target.value = "";
+        }
+
+        function agregarALista() {
+            const producto = document.getElementById('tiendaProducto').value;
+            const fechaRecibido = document.getElementById('tiendaFechaRecibido').value;
+            if (!producto || !fechaRecibido) {
+                alert("⚠️ Seleccione un producto y una fecha de recepción.");
+                return;
+            }
+            const vencimiento = calcularVencimientoRecibido(producto, fechaRecibido);
+            const vidaUtilDias = vidaUtil[producto]?.recibido || "N/A";
+            listaIngreso.push({
+                producto,
+                fechaRecibido,
+                vidaUtil: vidaUtilDias,
+                vencimiento,
+                verificado: false
+            });
+            renderizarTablaTienda();
+        }
+
+        function renderizarTablaTienda(modoVerificacion = false) {
+            const thead = document.getElementById('tablaIngresoTiendaHead');
+            const tbody = document.getElementById('cuerpoTablaTienda');
+            if (modoVerificacion) {
+                thead.innerHTML = `
+                    <tr>
+                        <th>✔</th>
+                        <th>Producto</th>
+                        <th>Fecha recibido</th>
+                        <th>Vida útil (días)</th>
+                        <th>Fecha vencimiento</th>
+                        <th>Acción</th>
+                    </tr>
+                `;
+            } else {
+                thead.innerHTML = `
+                    <tr>
+                        <th>Producto</th>
+                        <th>Fecha recibido</th>
+                        <th>Vida útil (días)</th>
+                        <th>Fecha vencimiento</th>
+                        <th>Acción</th>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = '';
+            listaIngreso.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                const fechaRecibido = formatearFecha(item.fechaRecibido);
+                const fechaVencimiento = item.vencimiento === "Según empaque" 
+                    ? "Según empaque" 
+                    : formatearFecha(item.vencimiento);
+                if (modoVerificacion) {
+                    tr.innerHTML = `
+                        <td><input type="checkbox" ${item.verificado ? 'checked' : ''} onchange="toggleVerificado(${index})"></td>
+                        <td>${item.producto}</td>
+                        <td>${fechaRecibido}</td>
+                        <td>${item.vidaUtil}</td>
+                        <td>${fechaVencimiento}</td>
+                        <td><button class="btn-eliminar" onclick="eliminarProducto(${index})">🗑️</button></td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td>${item.producto}</td>
+                        <td>${fechaRecibido}</td>
+                        <td>${item.vidaUtil}</td>
+                        <td>${fechaVencimiento}</td>
+                        <td><button class="btn-eliminar" onclick="eliminarProducto(${index})">🗑️</button></td>
+                    `;
+                }
+                tbody.appendChild(tr);
+            });
+        }
+
+        function nuevaLista() {
+            if (listaIngreso.length === 0) return;
+            if (confirm("¿Desea empezar una nueva lista? La lista actual se perderá si no está guardada.")) {
+                listaIngreso = [];
+                renderizarTablaTienda();
+            }
+        }
+
+        function descargarExcel() {
+            if (listaIngreso.length === 0) {
+                alert("⚠️ La lista está vacía.");
+                return;
+            }
+            const data = listaIngreso.map(item => ({
+                Producto: item.producto,
+                "Fecha recibido": formatearFecha(item.fechaRecibido),
+                "Vida útil (días)": item.vidaUtil,
+                "Fecha vencimiento": item.vencimiento === "Según empaque" ? "Según empaque" : formatearFecha(item.vencimiento)
+            }));
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Ingreso_Tienda");
+            XLSX.writeFile(wb, "Ingreso_Tienda.xlsx");
+        }
+
+        function guardarLista() {
+            if (listaIngreso.length === 0) {
+                alert("⚠️ La lista está vacía. No hay nada que guardar.");
+                return;
+            }
+            localStorage.setItem('listaIngresoGuardada', JSON.stringify(listaIngreso));
+            alert("✅ Lista guardada exitosamente.");
+        }
+
+        function cargarLista() {
+            const guardada = localStorage.getItem('listaIngresoGuardada');
+            if (!guardada) {
+                alert("ℹ️ No hay ninguna lista guardada.");
+                return;
+            }
+            try {
+                listaIngreso = JSON.parse(guardada);
+                listaIngreso = listaIngreso.map(item => ({
+                    ...item,
+                    verificado: item.verificado || false
+                }));
+                renderizarTablaTienda(true);
+                alert("✅ Lista cargada. Puede verificar o eliminar productos.");
+            } catch (e) {
+                alert("❌ Error al cargar la lista guardada.");
+            }
+        }
+
+        function toggleVerificado(index) {
+            listaIngreso[index].verificado = !listaIngreso[index].verificado;
+            localStorage.setItem('listaIngresoGuardada', JSON.stringify(listaIngreso));
+        }
+
+        function eliminarProducto(index) {
+            if (confirm("¿Está seguro de que desea eliminar este producto de la lista?")) {
+                listaIngreso.splice(index, 1);
+                const modoVerificacion = document.querySelector('#tablaIngresoTiendaHead th:first-child').textContent.trim() === '✔';
+                renderizarTablaTienda(modoVerificacion);
+                if (localStorage.getItem('listaIngresoGuardada')) {
+                    localStorage.setItem('listaIngresoGuardada', JSON.stringify(listaIngreso));
+                }
+            }
+        }
     </script>
 </body>
 </html>
-
