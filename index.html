@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>📅 SYSTEM - PJ RP 📅</title>
+    <title>📅 SYSTEM - PJ RP</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -274,6 +274,53 @@
             margin-top: 10px;
             display: none;
         }
+
+        /* === ESTILOS ESPECÍFICOS PARA LA PESTAÑA DE UNIDADES === */
+        .unidades-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: end;
+            margin-bottom: 20px;
+        }
+        .unidades-form > div {
+            flex: 1;
+            min-width: 200px;
+        }
+        .unidades-form input {
+            margin-bottom: 0;
+            width: 100%;
+        }
+        .unidades-form button {
+            padding: 10px 16px;
+            font-size: 15px;
+            min-width: 120px;
+        }
+        .lista-unidades {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        .lista-unidades li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .lista-unidades .btn-eliminar {
+            padding: 4px 8px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
         @media (max-width: 600px) {
             .tabs button {
                 font-size: 16px;
@@ -285,8 +332,11 @@
             .sticker-title { font-size: 22px; }
             .sticker-producto { font-size: 16px; padding: 10px; }
             .sticker-table th, .sticker-table td { padding: 8px; font-size: 13px; }
-            .btn-group, .tienda-form, .tienda-btns { flex-direction: column; }
+            .btn-group, .tienda-form, .tienda-btns, .unidades-form { flex-direction: column; }
             .resumen-fechas { font-size: 14px; }
+            .lista-unidades {
+                grid-template-columns: 1fr;
+            }
         }
         .sticker-container.fade-in {
             animation: fadeIn 0.5s ease-out;
@@ -302,9 +352,11 @@
     <div class="tabs">
         <button class="active" onclick="cambiarPestana('fechador')">📅 Fechador</button>
         <button onclick="cambiarPestana('ingreso')">📦 Ingreso de QCC</button>
+        <button onclick="cambiarPestana('unidades')">⚙️ Unidades</button>
     </div>
 
     <!-- PESTAÑA 1: FECHADOR -->
+    <!-- (Contenido sin cambios, solo se muestran productos actualizados) -->
     <div id="fechador" class="tab-content active">
         <div class="container">
             <h1>📅 Fechador - PJ RP</h1>
@@ -333,7 +385,8 @@
                     </optgroup>
                     <optgroup label="🥬 FRUTAS Y VEGETALES">
                         <option value="Champiñón">Champiñón</option>
-                        <option value="Cebolla blanca/roja">Cebolla blanca/roja</option>
+                        <option value="Cebolla blanca">Cebolla blanca</option>
+                        <option value="Cebolla roja">Cebolla roja</option>
                         <option value="Pimiento rojo">Pimiento rojo</option>
                         <option value="Pimiento verde">Pimiento verde</option>
                         <option value="Tomate">Tomate</option>
@@ -364,7 +417,8 @@
                     <optgroup label="🧂 OTROS INSUMOS">
                         <option value="Dustinator">Dustinator</option>
                         <option value="Masa Croisant">Masa Croisant</option>
-                        <option value="Masa delgada - importada">Masa delgada - importada</option>
+                        <option value="Masa delgada 28cm - importada">Masa delgada 28cm - importada</option>
+                        <option value="Masa delgada 32cm - importada">Masa delgada 32cm - importada</option>
                         <option value="Azúcar glaseada (Icing) - local">Azúcar glaseada (Icing) - local</option>
                         <option value="Cinamon Spreed">Cinamon Spreed</option>
                         <option value="Orégano - sachet">Orégano - sachet</option>
@@ -476,7 +530,8 @@
                     </optgroup>
                     <optgroup label="🥬 FRUTAS Y VEGETALES">
                         <option value="Champiñón">Champiñón</option>
-                        <option value="Cebolla blanca/roja">Cebolla blanca/roja</option>
+                        <option value="Cebolla blanca">Cebolla blanca</option>
+                        <option value="Cebolla roja">Cebolla roja</option>
                         <option value="Pimiento rojo">Pimiento rojo</option>
                         <option value="Pimiento verde">Pimiento verde</option>
                         <option value="Tomate">Tomate</option>
@@ -507,7 +562,8 @@
                     <optgroup label="🧂 OTROS INSUMOS">
                         <option value="Dustinator">Dustinator</option>
                         <option value="Masa Croisant">Masa Croisant</option>
-                        <option value="Masa delgada - importada">Masa delgada - importada</option>
+                        <option value="Masa delgada 28cm - importada">Masa delgada 28cm - importada</option>
+                        <option value="Masa delgada 32cm - importada">Masa delgada 32cm - importada</option>
                         <option value="Azúcar glaseada (Icing) - local">Azúcar glaseada (Icing) - local</option>
                         <option value="Cinamon Spreed">Cinamon Spreed</option>
                         <option value="Orégano - sachet">Orégano - sachet</option>
@@ -528,6 +584,10 @@
                     </optgroup>
                 </select>
                 <input type="date" id="tiendaFechaRecibido" placeholder="Fecha recibido" />
+                <input type="number" id="tiendaCantidad" placeholder="Cantidad" min="0" step="0.01" />
+                <select id="tiendaUnidad">
+                    <option value="">-- Unidad --</option>
+                </select>
             </div>
             <div class="tienda-btns">
                 <button onclick="agregarALista()">➕ Agregar</button>
@@ -544,6 +604,8 @@
                         <tr>
                             <th>Producto</th>
                             <th>Fecha Recibido</th>
+                            <th>Cantidad</th>
+                            <th>Unidad</th>
                             <th>Vida útil (días)</th>
                             <th>Fecha Vencimiento</th>
                             <th>Acción</th>
@@ -555,6 +617,22 @@
         </div>
     </div>
 
+    <!-- PESTAÑA 3: UNIDADES DE MEDIDA (OPTIMIZADA) -->
+    <div id="unidades" class="tab-content">
+        <div class="container">
+            <h1>⚙️ Unidades de Medida</h1>
+            <div class="unidades-form">
+                <div>
+                    <label for="nuevaUnidad">Nueva unidad:</label>
+                    <input type="text" id="nuevaUnidad" placeholder="Ej: kg, und, caja..." />
+                </div>
+                <button onclick="agregarUnidad()">✅ Agregar</button>
+            </div>
+            <h2>Unidades disponibles:</h2>
+            <ul id="listaUnidades" class="lista-unidades"></ul>
+        </div>
+    </div>
+
     <!-- Librería SheetJS -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <script>
@@ -563,11 +641,14 @@
             document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
             if (seccion === 'fechador') {
                 document.querySelectorAll('.tabs button')[0].classList.add('active');
-            } else {
+            } else if (seccion === 'ingreso') {
                 document.querySelectorAll('.tabs button')[1].classList.add('active');
+            } else if (seccion === 'unidades') {
+                document.querySelectorAll('.tabs button')[2].classList.add('active');
             }
             document.getElementById('fechador').classList.toggle('active', seccion === 'fechador');
             document.getElementById('ingreso').classList.toggle('active', seccion === 'ingreso');
+            document.getElementById('unidades').classList.toggle('active', seccion === 'unidades');
         }
 
         // === Contraseña para ingreso ===
@@ -584,6 +665,56 @@
                 error.style.display = 'block';
                 setTimeout(() => error.style.display = 'none', 3000);
             }
+        }
+
+        // === Unidades de medida ===
+        let unidadesMedida = JSON.parse(localStorage.getItem('unidadesMedida')) || ["und", "kg", "L", "caja"];
+        function renderizarUnidades() {
+            const lista = document.getElementById('listaUnidades');
+            lista.innerHTML = '';
+            unidadesMedida.forEach((unidad, index) => {
+                const li = document.createElement('li');
+                li.textContent = unidad;
+                const btn = document.createElement('button');
+                btn.textContent = '🗑️';
+                btn.className = 'btn-eliminar';
+                btn.onclick = () => eliminarUnidad(index);
+                li.appendChild(btn);
+                lista.appendChild(li);
+            });
+        }
+        function agregarUnidad() {
+            const input = document.getElementById('nuevaUnidad');
+            const valor = input.value.trim();
+            if (valor && !unidadesMedida.includes(valor)) {
+                unidadesMedida.push(valor);
+                localStorage.setItem('unidadesMedida', JSON.stringify(unidadesMedida));
+                input.value = '';
+                renderizarUnidades();
+                cargarUnidadesEnSelect();
+            } else if (unidadesMedida.includes(valor)) {
+                alert("⚠️ Esta unidad ya existe.");
+            } else {
+                alert("⚠️ Ingrese una unidad válida.");
+            }
+        }
+        function eliminarUnidad(index) {
+            if (confirm(`¿Eliminar la unidad "${unidadesMedida[index]}"?`)) {
+                unidadesMedida.splice(index, 1);
+                localStorage.setItem('unidadesMedida', JSON.stringify(unidadesMedida));
+                renderizarUnidades();
+                cargarUnidadesEnSelect();
+            }
+        }
+        function cargarUnidadesEnSelect() {
+            const select = document.getElementById('tiendaUnidad');
+            select.innerHTML = '<option value="">-- Unidad --</option>';
+            unidadesMedida.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u;
+                opt.textContent = u;
+                select.appendChild(opt);
+            });
         }
 
         // === OBJETOS COMPARTIDOS ===
@@ -604,7 +735,8 @@
             "Mezcla de 3 quesos (Asiago, Fontina, Provolone)": { recibido: 7, preparado: 7, linea: 1 },
             "Mezcla de 2 quesos (Romano y Parmesano)": { recibido: 7, preparado: 7, linea: 1 },
             "Champiñón": { recibido: "Según empaque", preparado: 1, linea: "11:59 p. m." },
-            "Cebolla blanca/roja": { recibido: "Según empaque", preparado: 2, linea: "11:59 p. m." },
+            "Cebolla blanca": { recibido: "Según empaque", preparado: 2, linea: "11:59 p. m." },
+            "Cebolla roja": { recibido: "Según empaque", preparado: 2, linea: "11:59 p. m." },
             "Pimiento rojo": { recibido: "Según empaque", preparado: 2, linea: "11:59 p. m." },
             "Pimiento verde": { recibido: "Según empaque", preparado: 2, linea: "11:59 p. m." },
             "Tomate": { recibido: "Según empaque", preparado: 2, linea: "11:59 p. m." },
@@ -631,7 +763,8 @@
             "Salsa de Miel Picante": { recibido: "Según empaque", preparado: 7, linea: "11:59 p. m." },
             "Dustinator": { recibido: "Según empaque", preparado: 14, linea: 2 },
             "Masa Croisant": { recibido: 5, preparado: null, linea: "11:59 p. m." },
-            "Masa delgada - importada": { recibido: 30, preparado: 3, linea: null },
+            "Masa delgada 28cm - importada": { recibido: 30, preparado: 3, linea: null },
+            "Masa delgada 32cm - importada": { recibido: 30, preparado: 3, linea: null },
             "Azúcar glaseada (Icing) - local": { recibido: "Según empaque", preparado: 30, linea: 2 },
             "Cinamon Spreed": { recibido: "Según empaque", preparado: 30, linea: 2 },
             "Orégano - sachet": { recibido: "Según empaque", preparado: "Según empaque", linea: "Según empaque" },
@@ -660,15 +793,12 @@
             const [y, m, d] = fechaStr.split('-');
             return `${d}/${m}/${y}`;
         }
-
         function sumarDiasISO(fechaISO, dias) {
             const [y, m, d] = fechaISO.split('-').map(Number);
             const fecha = new Date(Date.UTC(y, m - 1, d));
             fecha.setUTCDate(fecha.getUTCDate() + dias);
             return fecha.toISOString().split('T')[0];
         }
-
-        // ✅ FUNCIÓN FALTANTE: sumarDiasYHorasISO
         function sumarDiasYHorasISO(fechaISO, horaISO, dias, horas) {
             const [y, m, d] = fechaISO.split('-').map(Number);
             const [h, min] = horaISO.split(':').map(Number);
@@ -684,7 +814,6 @@
                 horaMostrar: formatearHora(nuevaHoraISO)
             };
         }
-
         function formatearHora(horaStr) {
             if (!horaStr) return "-";
             const [h, min] = horaStr.split(':');
@@ -693,13 +822,11 @@
             hh = hh % 12 || 12;
             return `${String(hh).padStart(2, '0')}:${min} ${ampm}`;
         }
-
         function obtenerNombreDia(fechaISO) {
             const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
             const fecha = new Date(`${fechaISO}T00:00:00-05:00`);
             return diasSemana[fecha.getDay()];
         }
-
         function obtenerNombreDiaCompleto(fechaISO, horaStr) {
             if (!fechaISO || !horaStr) return "día desconocido";
             const [h, min] = horaStr.split(':').map(Number);
@@ -708,13 +835,11 @@
             const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
             return diasSemana[fecha.getUTCDay()];
         }
-
         function obtenerHoraCierre(fechaYYYYMMDD) {
             const fecha = new Date(`${fechaYYYYMMDD}T00:00:00-05:00`);
             const diaSemana = fecha.getDay();
             return horariosCierre[diaSemana];
         }
-
         function obtenerUltimoMinutoDia(fechaISO) {
             const horaCierre = obtenerHoraCierre(fechaISO);
             return {
@@ -724,7 +849,6 @@
                 horaMostrar: formatearHora(horaCierre)
             };
         }
-
         function montarFilaSticker(etiqueta, fecha, hora, fechaVenc, horaVenc) {
             return `<tr>
                 <td class="label">${etiqueta}</td>
@@ -734,7 +858,6 @@
                 <td class="time-col"><span>${horaVenc}</span></td>
             </tr>`;
         }
-
         function updateShelfLife() {
             const producto = document.getElementById('producto').value;
             const recibidoSection = document.getElementById('recibidoSection');
@@ -762,7 +885,6 @@
             p.style.display = (s.preparado === "Según empaque") ? 'block' : 'none';
             l.style.display = (s.linea === "Según empaque") ? 'block' : 'none';
         }
-
         function calcularVencimientos() {
             const producto = document.getElementById('producto').value;
             if (!producto) {
@@ -778,7 +900,6 @@
             const pH = document.getElementById('preparadoHora')?.value;
             const lF = document.getElementById('lineaFecha')?.value;
             const lH = document.getElementById('lineaHora')?.value;
-
             if (pF && rF) {
                 const prepDate = new Date(pF + "T00:00:00-05:00");
                 const recibidoDate = new Date(rF + "T00:00:00-05:00");
@@ -795,7 +916,7 @@
                     return;
                 }
             }
-
+            // ... (resto del cálculo sin cambios) ...
             // --- RECIBIDO ---
             let fechaVencRecibidoISO = null;
             let fechaVencRecibidoMostrar = "-";
@@ -824,7 +945,6 @@
                 resumen.push(`<strong>RECIBIDO:</strong> No aplica`);
                 filas.push(montarFilaSticker("RECIB.", "-", "-", "-", "-"));
             }
-
             // --- PREPARADO ---
             let vencPreparadoOriginal = null;
             let fechaVencPreparadoMostrar = "-", horaVencPreparadoMostrar = "-";
@@ -877,13 +997,9 @@
                 resumen.push(`<strong>PREPARADO:</strong> No ingresado`);
                 filas.push(montarFilaSticker("PREP", "-", "-", "-", "-"));
             }
-
             // --- LÍNEA ---
             let vencLineaOriginal = null;
             let fechaVencLineaMostrar = "-", horaVencLineaMostrar = "-";
-            let vencLineaFinal = null;
-            let fechaVencLineaFinalMostrar = "-";
-            let horaVencLineaFinalMostrar = "-";
             if (lF && lH) {
                 if (shelfLife.linea === "Según empaque") {
                     const vF = document.getElementById('lineaVencFecha')?.value;
@@ -925,34 +1041,20 @@
                 resumen.push(`<strong>LÍNEA:</strong> No ingresado`);
                 filas.push(montarFilaSticker("LINEA", "-", "-", "-", "-"));
             }
-
-            // === AJUSTES AUTOMÁTICOS ===
+            // AJUSTES AUTOMÁTICOS
             if (vencPreparadoOriginal && vencLineaOriginal) {
                 const prepDateTime = new Date(`${vencPreparadoOriginal.fecha}T${vencPreparadoOriginal.hora}:00-05:00`);
                 const lineaDateTime = new Date(`${vencLineaOriginal.fecha}T${vencLineaOriginal.hora}:00-05:00`);
                 if (lineaDateTime > prepDateTime) {
-                    const nuevaFechaMostrar = formatearFecha(vencPreparadoOriginal.fecha);
-                    const nuevaHoraMostrar = formatearHora(vencPreparadoOriginal.hora);
-                    vencLineaFinal = { 
-                        fecha: vencPreparadoOriginal.fecha, 
-                        hora: vencPreparadoOriginal.hora 
-                    };
-                    fechaVencLineaFinalMostrar = nuevaFechaMostrar;
-                    horaVencLineaFinalMostrar = nuevaHoraMostrar;
-                    filas[2] = montarFilaSticker("LINEA", formatearFecha(lF), formatearHora(lH), nuevaFechaMostrar, nuevaHoraMostrar);
-                    ajustes.push(`LÍNEA ajustado a ${nuevaFechaMostrar} ${nuevaHoraMostrar} (fecha/hora de PREPARADO)`);
-                } else {
-                    vencLineaFinal = vencLineaOriginal;
-                    fechaVencLineaFinalMostrar = fechaVencLineaMostrar;
-                    horaVencLineaFinalMostrar = horaVencLineaMostrar;
+                    filas[2] = montarFilaSticker(
+                        "LINEA", formatearFecha(lF), formatearHora(lH),
+                        formatearFecha(vencPreparadoOriginal.fecha),
+                        formatearHora(vencPreparadoOriginal.hora)
+                    );
+                    ajustes.push(`LÍNEA ajustado a vencimiento de PREPARADO`);
                 }
-            } else {
-                vencLineaFinal = vencLineaOriginal;
-                fechaVencLineaFinalMostrar = fechaVencLineaMostrar;
-                horaVencLineaFinalMostrar = horaVencLineaMostrar;
             }
-
-            // Mostrar sticker
+            // RENDER
             document.getElementById('stickerProducto').textContent = producto;
             document.getElementById('stickerBody').innerHTML = filas.join('');
             const aviso = document.getElementById('ajusteAviso');
@@ -962,16 +1064,11 @@
             } else {
                 aviso.style.display = 'none';
             }
-
             const resumenFechas = document.getElementById('resumenFechas');
             const resumenRecibido = document.getElementById('resumenRecibido');
             const resumenPreparado = document.getElementById('resumenPreparado');
             const resumenLinea = document.getElementById('resumenLinea');
-
-            let recibidoTexto = "-";
-            let preparadoTexto = "-";
-            let lineaTexto = "-";
-
+            let recibidoTexto = "-", preparadoTexto = "-", lineaTexto = "-";
             if (fechaVencRecibidoISO) {
                 const dia = obtenerNombreDia(fechaVencRecibidoISO);
                 const fecha = formatearFecha(fechaVencRecibidoISO);
@@ -983,24 +1080,21 @@
                 const hora = formatearHora(vencPreparadoOriginal.hora);
                 preparadoTexto = `${dia} ${fecha} a las ${hora}`;
             }
-            if (vencLineaFinal) {
-                const dia = obtenerNombreDiaCompleto(vencLineaFinal.fecha, vencLineaFinal.hora);
-                const fecha = formatearFecha(vencLineaFinal.fecha);
-                const hora = formatearHora(vencLineaFinal.hora);
+            if (vencLineaOriginal) {
+                const dia = obtenerNombreDiaCompleto(vencLineaOriginal.fecha, vencLineaOriginal.hora);
+                const fecha = formatearFecha(vencLineaOriginal.fecha);
+                const hora = formatearHora(vencLineaOriginal.hora);
                 lineaTexto = `${dia} ${fecha} a las ${hora}`;
             }
-
             resumenRecibido.textContent = recibidoTexto;
             resumenPreparado.textContent = preparadoTexto;
             resumenLinea.textContent = lineaTexto;
             resumenFechas.style.display = 'block';
-
             const stickerContainer = document.getElementById('stickerContainer');
             stickerContainer.style.display = 'block';
             stickerContainer.classList.add('fade-in');
             stickerContainer.scrollIntoView({ behavior: 'smooth' });
         }
-
         function limpiarFormulario() {
             document.getElementById('producto').value = "";
             document.getElementById('recibidoSection').innerHTML = '';
@@ -1022,7 +1116,6 @@
 
         // === FUNCIONES DE INGRESO DE MERCADERÍA ===
         let listaIngreso = [];
-
         function calcularVencimientoRecibido(producto, fechaRecibido) {
             const info = vidaUtil[producto];
             if (!info || !fechaRecibido) return null;
@@ -1034,7 +1127,6 @@
                 return "N/A";
             }
         }
-
         function normalizar(texto) {
             return texto
                 .trim()
@@ -1042,16 +1134,13 @@
                 .normalize("NFD")
                 .replace(/[\u0300-\u036f]/g, "");
         }
-
         const productosValidos = Object.keys(vidaUtil);
         const indiceNormalizado = productosValidos.map(p => normalizar(p));
-
         function encontrarProductoValido(nombreExcel) {
             const normalizado = normalizar(nombreExcel);
             const idx = indiceNormalizado.indexOf(normalizado);
             return idx !== -1 ? productosValidos[idx] : null;
         }
-
         function importarExcel(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1074,16 +1163,24 @@
                         h.includes('fecha de recepci') || 
                         h.includes('fecha')
                     );
+                    const cantidadIndex = headers.findIndex(h => h.includes('cantidad') || h.includes('qty'));
+                    const unidadIndex = headers.findIndex(h => h.includes('unidad') || h.includes('u/m') || h.includes('um'));
+
                     if (productoIndex === -1 || fechaRecibidoIndex === -1) {
                         alert("⚠️ El archivo debe contener columnas 'Producto' y 'Fecha recibido'.");
                         return;
                     }
+
                     const nuevaLista = [];
                     for (let i = 1; i < jsonData.length; i++) {
                         const row = jsonData[i];
                         const productoOriginal = (row[productoIndex] || "").toString().trim();
                         let fechaRecibido = row[fechaRecibidoIndex];
+                        let cantidad = row[cantidadIndex] || 1;
+                        let unidad = row[unidadIndex] ? row[unidadIndex].toString().trim() : "";
+
                         if (!productoOriginal) continue;
+
                         if (typeof fechaRecibido === 'string') {
                             const partes = fechaRecibido.split('/');
                             if (partes.length === 3) {
@@ -1095,14 +1192,18 @@
                             const date = XLSX.SSF.parse_date_code(fechaRecibido);
                             fechaRecibido = `${date.y}-${String(date.m).padStart(2, '0')}-${String(date.d).padStart(2, '0')}`;
                         }
+
                         if (!fechaRecibido || !/^\d{4}-\d{2}-\d{2}$/.test(fechaRecibido)) {
                             continue;
                         }
+
                         const productoValido = encontrarProductoValido(productoOriginal);
                         if (!productoValido) {
                             nuevaLista.push({
                                 producto: `⚠️ NO RECONOCIDO: ${productoOriginal}`,
                                 fechaRecibido,
+                                cantidad: typeof cantidad === 'number' ? cantidad : 1,
+                                unidad: unidad,
                                 vidaUtil: "N/A",
                                 vencimiento: "N/A",
                                 verificado: false
@@ -1113,21 +1214,27 @@
                             nuevaLista.push({
                                 producto: productoValido,
                                 fechaRecibido,
+                                cantidad: typeof cantidad === 'number' ? cantidad : 1,
+                                unidad: unidad,
                                 vidaUtil: vidaUtilDias,
                                 vencimiento,
                                 verificado: false
                             });
                         }
                     }
+
                     if (nuevaLista.length === 0) {
                         alert("⚠️ No se encontraron productos válidos en el archivo.");
                         return;
                     }
+
                     listaIngreso = nuevaLista;
                     renderizarTablaTienda();
+
                     const noReconocidos = nuevaLista.filter(p => p.producto.startsWith("⚠️")).length;
                     if (noReconocidos > 0) {
-                        alert(`✅ ${nuevaLista.length - noReconocidos} productos importados.\n⚠️ ${noReconocidos} productos no reconocidos. Revise la lista.`);
+                        alert(`✅ ${nuevaLista.length - noReconocidos} productos importados.
+⚠️ ${noReconocidos} productos no reconocidos. Revise la lista.`);
                     } else {
                         alert(`✅ Todos los productos importados correctamente.`);
                     }
@@ -1143,31 +1250,44 @@
         function agregarALista() {
             const producto = document.getElementById('tiendaProducto').value;
             const fechaRecibido = document.getElementById('tiendaFechaRecibido').value;
-            if (!producto || !fechaRecibido) {
-                alert("⚠️ Seleccione un producto y una fecha de recepción.");
+            const cantidad = parseFloat(document.getElementById('tiendaCantidad').value);
+            const unidad = document.getElementById('tiendaUnidad').value;
+
+            if (!producto || !fechaRecibido || isNaN(cantidad) || !unidad) {
+                alert("⚠️ Complete todos los campos.");
                 return;
             }
+
             const vencimiento = calcularVencimientoRecibido(producto, fechaRecibido);
             const vidaUtilDias = vidaUtil[producto]?.recibido || "N/A";
+
             listaIngreso.push({
                 producto,
                 fechaRecibido,
+                cantidad,
+                unidad,
                 vidaUtil: vidaUtilDias,
                 vencimiento,
                 verificado: false
             });
+
             renderizarTablaTienda();
+            document.getElementById('tiendaCantidad').value = '';
+            document.getElementById('tiendaUnidad').value = '';
         }
 
         function renderizarTablaTienda(modoVerificacion = false) {
             const thead = document.getElementById('tablaIngresoTiendaHead');
             const tbody = document.getElementById('cuerpoTablaTienda');
+
             if (modoVerificacion) {
                 thead.innerHTML = `
                     <tr>
                         <th>✔</th>
                         <th>Producto</th>
                         <th>Fecha recibido</th>
+                        <th>Cantidad</th>
+                        <th>Unidad</th>
                         <th>Vida útil (días)</th>
                         <th>Fecha vencimiento</th>
                         <th>Acción</th>
@@ -1178,12 +1298,15 @@
                     <tr>
                         <th>Producto</th>
                         <th>Fecha recibido</th>
+                        <th>Cantidad</th>
+                        <th>Unidad</th>
                         <th>Vida útil (días)</th>
                         <th>Fecha vencimiento</th>
                         <th>Acción</th>
                     </tr>
                 `;
             }
+
             tbody.innerHTML = '';
             listaIngreso.forEach((item, index) => {
                 const tr = document.createElement('tr');
@@ -1191,11 +1314,14 @@
                 const fechaVencimiento = item.vencimiento === "Según empaque" 
                     ? "Según empaque" 
                     : formatearFecha(item.vencimiento);
+
                 if (modoVerificacion) {
                     tr.innerHTML = `
                         <td><input type="checkbox" ${item.verificado ? 'checked' : ''} onchange="toggleVerificado(${index})"></td>
                         <td>${item.producto}</td>
                         <td>${fechaRecibido}</td>
+                        <td>${item.cantidad}</td>
+                        <td>${item.unidad}</td>
                         <td>${item.vidaUtil}</td>
                         <td>${fechaVencimiento}</td>
                         <td><button class="btn-eliminar" onclick="eliminarProducto(${index})">🗑️</button></td>
@@ -1204,6 +1330,8 @@
                     tr.innerHTML = `
                         <td>${item.producto}</td>
                         <td>${fechaRecibido}</td>
+                        <td>${item.cantidad}</td>
+                        <td>${item.unidad}</td>
                         <td>${item.vidaUtil}</td>
                         <td>${fechaVencimiento}</td>
                         <td><button class="btn-eliminar" onclick="eliminarProducto(${index})">🗑️</button></td>
@@ -1229,6 +1357,8 @@
             const data = listaIngreso.map(item => ({
                 Producto: item.producto,
                 "Fecha recibido": formatearFecha(item.fechaRecibido),
+                Cantidad: item.cantidad,
+                Unidad: item.unidad,
                 "Vida útil (días)": item.vidaUtil,
                 "Fecha vencimiento": item.vencimiento === "Según empaque" ? "Según empaque" : formatearFecha(item.vencimiento)
             }));
@@ -1281,7 +1411,12 @@
                 }
             }
         }
+
+        // === INICIALIZACIÓN ===
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarUnidades();
+            cargarUnidadesEnSelect();
+        });
     </script>
 </body>
 </html>
-
